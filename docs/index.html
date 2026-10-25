@@ -52,7 +52,7 @@ a{color:var(--accent)}
   <h2>Progress across every round</h2>
   <p class="muted small">Highest right‑hand height above the pelvis in each rollout (hand at rest: 0.02 m).
   Grey lines: shoulder (0.38 m) and top of head (0.65 m). Right column: vision‑critic score.</p>
-  <div class="ov-row"><span class="ov-label">Stage 1 · starting from my walk + reach policy · round 1</span><span class="ov-track"><span class="ov-bar" style="width:40.4%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.32 m</span></div><div class="ov-row"><span class="ov-label">Stage 1 · starting from my walk + reach policy · round 2</span><span class="ov-track"><span class="ov-bar" style="width:34.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.27 m · 2/10</span></div><div class="ov-row"><span class="ov-label">Stage 1 · starting from my walk + reach policy · round 3</span><span class="ov-track"><span class="ov-bar" style="width:63.0%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.50 m</span></div><div class="ov-row"><span class="ov-label">Stage 2 · continuing from the best checkpoint · round 1</span><span class="ov-track"><span class="ov-bar" style="width:76.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.60 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Stage 2 · continuing from the best checkpoint · round 2</span><span class="ov-track"><span class="ov-bar" style="width:77.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.61 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Stage 2 · continuing from the best checkpoint · round 3</span><span class="ov-track"><span class="ov-bar" style="width:78.4%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.62 m · 8/10</span></div>
+  <div class="ov-row"><span class="ov-label">Stage 1 · starting from my walk + reach policy · round 1</span><span class="ov-track"><span class="ov-bar" style="width:40.4%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.32 m</span></div><div class="ov-row"><span class="ov-label">Stage 1 · starting from my walk + reach policy · round 2</span><span class="ov-track"><span class="ov-bar" style="width:34.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.27 m · 2/10</span></div><div class="ov-row"><span class="ov-label">Stage 1 · starting from my walk + reach policy · round 3</span><span class="ov-track"><span class="ov-bar" style="width:63.0%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.50 m</span></div><div class="ov-row"><span class="ov-label">Stage 2 · continuing from the best checkpoint · round 1</span><span class="ov-track"><span class="ov-bar" style="width:76.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.60 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Stage 2 · continuing from the best checkpoint · round 2</span><span class="ov-track"><span class="ov-bar" style="width:77.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.61 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Stage 2 · continuing from the best checkpoint · round 3</span><span class="ov-track"><span class="ov-bar" style="width:78.4%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.62 m · 8/10</span></div><div class="ov-row"><span class="ov-label">Stage 3 · final rounds · round 1</span><span class="ov-track"><span class="ov-bar" style="width:79.8%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.63 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Stage 3 · final rounds · round 2</span><span class="ov-track"><span class="ov-bar" style="width:80.6%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.64 m · 8/10</span></div>
 </section>
 <section class="run">
   <p class='kicker'>Stage 1 · starting from my walk + reach policy</p><h2>“raise the right hand above the head and wave it side to side while walking”</h2>
@@ -459,6 +459,181 @@ def extra_rewards(env, data, action, info):
         &quot;hand_rise&quot;: rise_reward,
         &quot;hand_wave_y&quot;: wave_reward_gated,
         &quot;hand_above_head&quot;: above_head_reward,
+    }
+</code></pre></details>
+    </div>
+  </div>
+</article>
+</section>
+<section class="run">
+  <p class='kicker'>Stage 3 · final rounds</p><h2>“raise the right hand above the head and wave it side to side while walking”</h2>
+  <p class="muted">2 rounds of write → train → watch → improve, fully automatic.</p>
+  
+<article class="iter">
+  <header><h3>Round 1</h3><span class="score">critic 7/10</span></header>
+  <div class="cols">
+    <div>
+      <video src="run3/iter_1.mp4" controls muted loop playsinline preload="metadata"></video>
+      <div class="gauge"><span class="fill-mean" style="width:71.0%"></span><span class="fill-max" style="left:75.1%"></span><span class="mark" style="left:44.5%"><i>shoulder</i></span><span class="mark" style="left:77.0%"><i>head top</i></span></div><div class="muted small">right hand above pelvis: mean 0.60 m, max 0.63 m</div>
+      <svg viewBox="0 0 260 60" preserveAspectRatio="none" class="spark" role="img" aria-label="training reward curve"><path d="M4.0,45.4 L18.0,18.5 L32.0,41.5 L46.0,37.4 L60.0,20.8 L74.0,56.0 L88.0,39.8 L102.0,35.8 L116.0,21.4 L130.0,54.9 L144.0,42.9 L158.0,30.9 L172.0,40.4 L186.0,45.7 L200.0,24.0 L214.0,31.0 L228.0,4.0 L242.0,34.5 L256.0,34.4" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="muted small">training reward 60.6 → 63.3 over 29M steps</div>
+    </div>
+    <div>
+      <h4>Nemotron Super‑VL watched the rollout</h4>
+      <p>The robot raises the arm identified as the right hand via simulator data (high z-position) to approximately head level and moves it side-to-side (varying y-position). It remains upright and shifts its stance, indicating walking behavior.</p>
+      <p><b>Problems:</b> The hand&#x27;s maximum height (0.632m) is slightly below the head top (0.648m), so it does not clearly go *above* the head. The walking motion is minimal, appearing more like weight shifting than traversing.</p>
+      <p><b>Suggestion:</b> Increase the target arm height to clearly exceed the head top and command larger leg steps to demonstrate distinct walking.</p>
+      <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
+import jax.numpy as jp
+
+import jax
+import jax.numpy as jp
+
+SCALES = {
+    &quot;hand_reach&quot;: 0.0,
+    &quot;hand_height&quot;: 3.0,
+    &quot;hand_rise&quot;: 1.5,
+    &quot;hand_wave_y&quot;: 3.5,
+    &quot;hand_above_head&quot;: 2.0,
+    &quot;elbow_up&quot;: 1.0,
+}
+
+def extra_rewards(env, data, action, info):
+    pelvis = data.site_xpos[env._pelvis_imu_site_id]
+    R = data.site_xmat[env._pelvis_imu_site_id].reshape(3, 3)
+    rh_world = data.site_xpos[env._hands_site_id[1]]
+    rh_pelvis = R.T @ (rh_world - pelvis)
+    hand_z = rh_pelvis[2]
+    hand_y = rh_pelvis[1]
+
+    # Right elbow position in pelvis frame (approximate from measured geometry)
+    # Shoulder at [-0.031, -0.1, 0.375], elbow_link [-0.046, -0.188, 0.194]
+    # Elbow rest ≈ [-0.077, -0.288, 0.569]
+    # We don&#x27;t have direct elbow site, so approximate from hand and shoulder geometry
+    # When hand is high, elbow should be around z=0.55-0.60
+    elbow_z_est = 0.57 + 0.3 * (hand_z - 0.7)  # rough coupling
+
+    z_rest = 0.022
+    head_height = 0.648
+    target_height = 0.70          # above head (0.648), below max (0.792)
+
+    # 1) Precision height tracking: tighter sigma for sharper peak at target
+    height_err = hand_z - target_height
+    height_reward = jp.exp(-height_err**2 / (0.15**2))
+
+    # 2) Linear rise shaping: 0 at rest, 1.0 at target_height (fixed denominator)
+    rise_reward = jp.clip((hand_z - z_rest) / (target_height - z_rest), 0.0, 1.0)
+
+    # 3) Height gate: waving only counts when hand is above 0.6m (near head)
+    gate_x = 12.0 * (hand_z - 0.6)
+    height_gate = 1.0 / (1.0 + jp.exp(-gate_x))
+
+    # 4) Waving target: 1.0 Hz (more natural), center at shoulder line (-0.1), amplitude 0.25
+    freq = 1.0
+    y_center = -0.1
+    amp = 0.25
+    y_target = y_center + amp * jp.sin(2.0 * jp.pi * freq * data.time)
+    wave_err = hand_y - y_target
+    wave_reward = jp.exp(-wave_err**2 / (0.12**2))
+    wave_reward_gated = wave_reward * height_gate
+
+    # 5) Above-head bonus: sigmoid at 0.65m
+    above_x = 25.0 * (hand_z - 0.65)
+    above_head_reward = 1.0 / (1.0 + jp.exp(-above_x))
+
+    # 6) Elbow up encouragement: target elbow_z &gt; 0.55 when hand is high
+    elbow_target = 0.55
+    elbow_err = elbow_z_est - elbow_target
+    elbow_reward = jp.exp(-elbow_err**2 / (0.1**2)) * height_gate
+
+    return {
+        &quot;hand_height&quot;: height_reward,
+        &quot;hand_rise&quot;: rise_reward,
+        &quot;hand_wave_y&quot;: wave_reward_gated,
+        &quot;hand_above_head&quot;: above_head_reward,
+        &quot;elbow_up&quot;: elbow_reward,
+    }
+</code></pre></details>
+    </div>
+  </div>
+</article>
+<article class="iter best">
+  <header><h3>Round 2</h3><span class="score">critic 8/10</span><span class="badge">best</span></header>
+  <div class="cols">
+    <div>
+      <video src="run3/iter_2.mp4" controls muted loop playsinline preload="metadata"></video>
+      <div class="gauge"><span class="fill-mean" style="width:70.9%"></span><span class="fill-max" style="left:75.8%"></span><span class="mark" style="left:44.5%"><i>shoulder</i></span><span class="mark" style="left:77.0%"><i>head top</i></span></div><div class="muted small">right hand above pelvis: mean 0.60 m, max 0.64 m</div>
+      <svg viewBox="0 0 260 60" preserveAspectRatio="none" class="spark" role="img" aria-label="training reward curve"><path d="M4.0,23.7 L18.0,16.3 L32.0,56.0 L46.0,27.4 L60.0,5.8 L74.0,36.6 L88.0,4.0 L102.0,27.8 L116.0,7.0 L130.0,32.4 L144.0,30.6 L158.0,15.6 L172.0,23.2 L186.0,36.2 L200.0,15.4 L214.0,14.5 L228.0,16.2 L242.0,33.3 L256.0,44.0" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="muted small">training reward 86.0 → 80.5 over 29M steps</div>
+    </div>
+    <div>
+      <h4>Nemotron Super‑VL watched the rollout</h4>
+      <p>The robot successfully raises its right hand (identified via sensor data as the limb with high elevation) to near head height and moves it sideways while maintaining an upright walking posture. The robot stays balanced throughout the sequence.</p>
+      <p><b>Problems:</b> According to the data, the right hand&#x27;s maximum height (0.638m) is slightly below the head top (0.648m), so it does not strictly go *above* the head. The side-to-side waving motion is present but could be more pronounced.</p>
+      <p><b>Suggestion:</b> Increase the target height for the right hand to ensure it clears the head top completely and exaggerate the lateral movement for a clearer wave.</p>
+      <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
+import jax.numpy as jp
+
+import jax
+import jax.numpy as jp
+
+SCALES = {
+    &quot;hand_reach&quot;: 0.0,
+    &quot;hand_height&quot;: 3.0,
+    &quot;hand_rise&quot;: 1.5,
+    &quot;hand_wave_y&quot;: 4.0,
+    &quot;hand_above_head&quot;: 2.5,
+    &quot;elbow_up&quot;: 1.0,
+}
+
+def extra_rewards(env, data, action, info):
+    pelvis = data.site_xpos[env._pelvis_imu_site_id]
+    R = data.site_xmat[env._pelvis_imu_site_id].reshape(3, 3)
+    rh_world = data.site_xpos[env._hands_site_id[1]]
+    rh_pelvis = R.T @ (rh_world - pelvis)
+    hand_z = rh_pelvis[2]
+    hand_y = rh_pelvis[1]
+
+    # Estimated elbow height in pelvis frame (coupled to hand height)
+    elbow_z_est = 0.57 + 0.3 * (hand_z - 0.7)
+
+    z_rest = 0.022
+    head_height = 0.648
+    target_height = 0.70          # above head (0.648), below max (0.792)
+
+    # 1) Precision height tracking: wider sigma (0.25) so gradient reaches all the way to target
+    height_err = hand_z - target_height
+    height_reward = jp.exp(-height_err**2 / (0.25**2))
+
+    # 2) Linear rise shaping: 0 at rest, 1.0 at target_height
+    rise_reward = jp.clip((hand_z - z_rest) / (target_height - z_rest), 0.0, 1.0)
+
+    # 3) Height gate: waving only counts when hand is above 0.55m (lowered from 0.6)
+    gate_x = 12.0 * (hand_z - 0.55)
+    height_gate = 1.0 / (1.0 + jp.exp(-gate_x))
+
+    # 4) Waving target: 1.0 Hz, center at shoulder line (-0.1), amplitude 0.25
+    freq = 1.0
+    y_center = -0.1
+    amp = 0.25
+    y_target = y_center + amp * jp.sin(2.0 * jp.pi * freq * data.time)
+    wave_err = hand_y - y_target
+    wave_reward = jp.exp(-wave_err**2 / (0.12**2))
+    wave_reward_gated = wave_reward * height_gate
+
+    # 5) Above-head bonus: sigmoid at 0.62m (lowered from 0.65) to trigger before head top
+    above_x = 20.0 * (hand_z - 0.62)
+    above_head_reward = 1.0 / (1.0 + jp.exp(-above_x))
+
+    # 6) Elbow up encouragement: target elbow_z &gt; 0.55 when hand is high
+    elbow_target = 0.55
+    elbow_err = elbow_z_est - elbow_target
+    elbow_reward = jp.exp(-elbow_err**2 / (0.1**2)) * height_gate
+
+    return {
+        &quot;hand_height&quot;: height_reward,
+        &quot;hand_rise&quot;: rise_reward,
+        &quot;hand_wave_y&quot;: wave_reward_gated,
+        &quot;hand_above_head&quot;: above_head_reward,
+        &quot;elbow_up&quot;: elbow_reward,
     }
 </code></pre></details>
     </div>
