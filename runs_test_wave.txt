@@ -1,0 +1,84 @@
+Warp 1.16.0 initialized:
+   CUDA Toolkit 12.9, Driver 13.2
+   Devices:
+     "cpu"      : "CPU"
+     "cuda:0"   : "NVIDIA GeForce RTX 4050 Laptop GPU" (6 GiB, sm_89, mempool enabled)
+   Kernel cache:
+     /home/vishwa-venkatesh/.cache/warp/1.16.0
+0: reward=22.108
+WARNING:absl:Attempted to create temporary directory /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/test_wave/checkpoints/000000655360.orbax-checkpoint-tmp which already exists. Removing existing directory since it is not finalized.
+655360: reward=22.652
+1310720: reward=19.920
+1966080: reward=22.579
+2621440: reward=20.559
+3276800: reward=22.449
+3932160: reward=22.822
+4587520: reward=23.952
+5242880: reward=25.700
+5898240: reward=22.160
+6553600: reward=23.316
+7208960: reward=24.324
+7864320: reward=23.396
+8519680: reward=22.639
+9175040: reward=24.884
+9830400: reward=25.272
+Warp CUDA error 2: out of memory (in function wp_alloc_device_async, /builds/omniverse/warp/warp/native/warp.cu:817)
+Traceback (most recent call last):
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/third_party/warp/_src/jax/ffi.py", line 1040, in ffi_callback
+    self.func(*arg_list)
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/warp/ffi.py", line 174, in func_wrapper
+    return func(*unflat_args, *output_buffers, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/warp/ffi.py", line 251, in wrapper
+    return func(*args)
+           ^^^^^^^^^^^
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/warp/forward.py", line 1227, in _forward_shim
+    mjwarp.forward(_m, _d)
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/third_party/mujoco_warp/_src/warp_util.py", line 97, in wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/third_party/mujoco_warp/_src/forward.py", line 1349, in forward
+    fwd_position(m, d, factorize=False)
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/third_party/mujoco_warp/_src/warp_util.py", line 97, in wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/third_party/mujoco_warp/_src/forward.py", line 666, in fwd_position
+    collision_driver.collision(m, d)
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/third_party/mujoco_warp/_src/warp_util.py", line 97, in wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/third_party/mujoco_warp/_src/collision_driver.py", line 933, in collision
+    _narrowphase(m, d, ctx)
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/third_party/mujoco_warp/_src/collision_driver.py", line 877, in _narrowphase
+    convex_narrowphase(m, d, ctx, convex_pairs)
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/third_party/mujoco_warp/_src/warp_util.py", line 97, in wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/mujoco/mjx/third_party/mujoco_warp/_src/collision_convex.py", line 1211, in convex_narrowphase
+    epa_vert = wp.empty(shape=(d.naccdmax, 10 + 2 * epa_iterations), dtype=wp.vec3)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/warp/_src/context.py", line 9261, in empty
+    arr = warp.array(
+          ^^^^^^^^^^^
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/warp/_src/types.py", line 3285, in __init__
+    self._init_new(dtype, shape, strides, device, pinned)
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/warp/_src/types.py", line 3741, in _init_new
+    ptr = allocator.allocate(capacity)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/warp/_src/context.py", line 4463, in allocate
+    raise RuntimeError(f"Failed to allocate {size_in_bytes} bytes on device '{self.device}'")
+RuntimeError: Failed to allocate 33030144 bytes on device 'cuda:0'
+
+Traceback (most recent call last):
+  File "/home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/train_skill.py", line 86, in <module>
+    main()
+  File "/home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/train_skill.py", line 82, in main
+    train(args.reward, args.restore, args.timesteps, args.logdir)
+  File "/home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/train_skill.py", line 61, in train
+    ppo.train(**tp, network_factory=network_factory, seed=1,
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/brax/training/agents/ppo/train.py", line 858, in train
+    metrics = evaluator.run_evaluation(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vishwa-venkatesh/miniconda3/envs/g1/lib/python3.11/site-packages/brax/training/acting.py", line 152, in run_evaluation
+    eval_metrics.active_episodes.block_until_ready()
+jax.errors.JaxRuntimeError: UNKNOWN: FFI callback error: RuntimeError: Failed to allocate 33030144 bytes on device 'cuda:0' [executable_name='jit_generate_eval_unroll']

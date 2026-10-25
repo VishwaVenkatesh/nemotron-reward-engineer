@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nemotron Reward Engineer</title>
+<style>
+:root{--bg:#0f1210;--card:#171c18;--text:#e8ede9;--muted:#93a097;--accent:#76b900;--line:#2a322c}
+@media (prefers-color-scheme: light){:root{--bg:#f6f8f5;--card:#fff;--text:#18201a;--muted:#5d6a61;--accent:#4f8000;--line:#dfe5dd}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:32px 16px 80px}
+h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 8px}h2{margin:48px 0 4px}h3{margin:0}h4{margin:0 0 6px;font-size:15px;color:var(--accent)}
+.muted{color:var(--muted)}.small{font-size:13px}
+.lede{font-size:18px;max-width:760px}
+.pipeline{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0}
+.pipeline span{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 12px;font-size:14px}
+.pipeline b{color:var(--accent)}
+.kicker{margin:48px 0 0;color:var(--accent);font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.kicker+h2{margin-top:4px}
+.overview{margin-top:32px}
+.ov-row{display:grid;grid-template-columns:200px minmax(0,1fr) 110px;gap:12px;align-items:center;margin:8px 0;font-size:14px}
+.ov-track{position:relative;height:16px;background:var(--card);border:1px solid var(--line);border-radius:4px}
+.ov-bar{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:3px}
+.ov-val{color:var(--muted);font-variant-numeric:tabular-nums}
+@media (max-width:640px){.ov-row{grid-template-columns:1fr 92px}.ov-label{grid-column:1/-1}}
+.iter{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0}
+.iter.best{border-color:var(--accent)}
+.iter header{display:flex;gap:12px;align-items:baseline;margin-bottom:12px}
+.score{color:var(--muted);font-size:14px}.badge{background:var(--accent);color:#0b0d0b;border-radius:99px;padding:1px 10px;font-size:12px;font-weight:600}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+video{width:100%;border-radius:8px;background:#000;aspect-ratio:4/3}
+pre{overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:12.5px;line-height:1.45}
+details summary{cursor:pointer;color:var(--accent);margin-top:8px}
+.spark{width:100%;height:60px;margin-top:10px}
+.gauge{position:relative;height:14px;background:var(--bg);border:1px solid var(--line);border-radius:99px;margin-top:12px;overflow:visible}
+.fill-mean{position:absolute;left:0;top:0;bottom:0;background:var(--accent);opacity:.55;border-radius:99px}
+.fill-max{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--accent)}
+.mark{position:absolute;top:-6px;bottom:-6px;width:1px;background:var(--muted)}
+.mark i{position:absolute;top:-18px;left:-20px;font-size:11px;font-style:normal;color:var(--muted);white-space:nowrap}
+footer{margin-top:64px;color:var(--muted);font-size:14px}
+a{color:var(--accent)}
+</style></head><body><main>
+<h1>Nemotron Reward Engineer</h1>
+<p class="lede">Type a skill in plain English. An AI agent writes the reinforcement‑learning reward, trains a Unitree G1 humanoid,
+<b>watches the result</b>, and rewrites the reward until the robot gets it right. No human tuning in the loop.</p>
+<div class="pipeline">
+<span><b>Nemotron 3 Ultra</b> writes reward code</span><span>→ compile check, auto‑repair</span>
+<span>→ PPO fine‑tune in MuJoCo MJX</span><span>→ rollout video + measured hand positions</span>
+<span><b>Nemotron 3.5 Super‑VL</b> critiques</span><span>→ back to Ultra</span>
+</div>
+<p class="muted small">All models served through Nebius Token Factory. Starting policy: my whole‑body walk + reach controller for the G1.</p>
+
+<section class="overview">
+  <h2>Progress across every round</h2>
+  <p class="muted small">Highest right‑hand height above the pelvis in each rollout (hand at rest: 0.02 m).
+  Grey lines: shoulder (0.38 m) and top of head (0.65 m). Right column: vision‑critic score.</p>
+  <div class="ov-row"><span class="ov-label">Stage 1 · starting from my walk + reach policy · round 1</span><span class="ov-track"><span class="ov-bar" style="width:40.4%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.32 m</span></div><div class="ov-row"><span class="ov-label">Stage 1 · starting from my walk + reach policy · round 2</span><span class="ov-track"><span class="ov-bar" style="width:34.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.27 m · 2/10</span></div><div class="ov-row"><span class="ov-label">Stage 1 · starting from my walk + reach policy · round 3</span><span class="ov-track"><span class="ov-bar" style="width:63.0%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.50 m</span></div><div class="ov-row"><span class="ov-label">Stage 2 · continuing from the best checkpoint · round 1</span><span class="ov-track"><span class="ov-bar" style="width:76.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.60 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Stage 2 · continuing from the best checkpoint · round 2</span><span class="ov-track"><span class="ov-bar" style="width:77.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.61 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Stage 2 · continuing from the best checkpoint · round 3</span><span class="ov-track"><span class="ov-bar" style="width:78.4%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.62 m · 8/10</span></div>
+</section>
+<section class="run">
+  <p class='kicker'>Stage 1 · starting from my walk + reach policy</p><h2>“raise the right hand above the head and wave it side to side while walking”</h2>
+  <p class="muted">3 rounds of write → train → watch → improve, fully automatic.</p>
+  
+<article class="iter">
+  <header><h3>Round 1</h3><span class="score">critic –</span></header>
+  <div class="cols">
+    <div>
+      <video src="run1/iter_1.mp4" controls muted loop playsinline preload="metadata"></video>
+      <div class="gauge"><span class="fill-mean" style="width:31.9%"></span><span class="fill-max" style="left:38.0%"></span><span class="mark" style="left:44.5%"><i>shoulder</i></span><span class="mark" style="left:77.0%"><i>head top</i></span></div><div class="muted small">right hand above pelvis: mean 0.27 m, max 0.32 m</div>
+      <svg viewBox="0 0 260 60" preserveAspectRatio="none" class="spark" role="img" aria-label="training reward curve"><path d="M4.0,45.0 L17.3,35.0 L30.5,53.5 L43.8,32.2 L57.1,36.3 L70.3,29.2 L83.6,44.4 L96.8,51.4 L110.1,31.6 L123.4,56.0 L136.6,32.6 L149.9,6.3 L163.2,39.3 L176.4,48.3 L189.7,11.4 L202.9,4.0 L216.2,16.8 L229.5,30.0 L242.7,31.8 L256.0,22.5" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="muted small">training reward 41.5 → 44.8 over 22M steps</div>
+    </div>
+    <div>
+      <h4>Nemotron Super‑VL watched the rollout</h4>
+      <p></p>
+      <p><b>Problems:</b> </p>
+      <p><b>Suggestion:</b> </p>
+      <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
+import jax.numpy as jp
+
+SCALES = {
+    &quot;hand_reach&quot;: 0.0,      # disable base reach term (conflicts with raising hand above head)
+    &quot;hand_height&quot;: 2.0,     # reward right hand above head (z in pelvis frame)
+    &quot;hand_wave_y&quot;: 1.5,     # reward side-to-side waving (y in pelvis frame)
+}
+
+def extra_rewards(env, data, action, info):
+    # Pelvis frame
+    pelvis = data.site_xpos[env._pelvis_imu_site_id]
+    R = data.site_xmat[env._pelvis_imu_site_id].reshape(3, 3)
+    # Right hand in pelvis frame (x forward, y left, z up)
+    rh_world = data.site_xpos[env._hands_site_id[1]]
+    rh_pelvis = R.T @ (rh_world - pelvis)
+    hand_z = rh_pelvis[2]
+    hand_y = rh_pelvis[1]
+
+    # 1) Height tracking: target above head (~0.648), below max (0.792)
+    height_target = 0.70
+    height_err = hand_z - height_target
+    height_reward = jp.exp(-height_err**2 / (0.6**2))  # wide sigma: signal from rest (z≈0.02)
+
+    # 2) Waving: sinusoidal y target at ~1.5 Hz, amplitude 0.15m around y≈-0.2
+    freq = 1.5
+    y_center = -0.20
+    amp = 0.15
+    y_target = y_center + amp * jp.sin(2.0 * jp.pi * freq * data.time)
+    wave_err = hand_y - y_target
+    wave_reward = jp.exp(-wave_err**2 / (0.12**2))  # sigma allows ~0.15m error still &gt;0.5
+
+    return {
+        &quot;hand_height&quot;: height_reward,
+        &quot;hand_wave_y&quot;: wave_reward,
+    }
+</code></pre></details>
+    </div>
+  </div>
+</article>
+<article class="iter best">
+  <header><h3>Round 2</h3><span class="score">critic 2/10</span><span class="badge">best</span></header>
+  <div class="cols">
+    <div>
+      <video src="run1/iter_2.mp4" controls muted loop playsinline preload="metadata"></video>
+      <div class="gauge"><span class="fill-mean" style="width:26.6%"></span><span class="fill-max" style="left:32.1%"></span><span class="mark" style="left:44.5%"><i>shoulder</i></span><span class="mark" style="left:77.0%"><i>head top</i></span></div><div class="muted small">right hand above pelvis: mean 0.22 m, max 0.27 m</div>
+      <svg viewBox="0 0 260 60" preserveAspectRatio="none" class="spark" role="img" aria-label="training reward curve"><path d="M4.0,43.3 L19.8,40.0 L35.5,56.0 L51.2,23.6 L67.0,35.0 L82.8,28.2 L98.5,37.5 L114.2,38.4 L130.0,29.4 L145.8,45.7 L161.5,30.1 L177.2,26.1 L193.0,37.1 L208.8,36.5 L224.5,4.0 L240.2,7.6 L256.0,18.4" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="muted small">training reward 34.9 → 37.9 over 18M steps</div>
+    </div>
+    <div>
+      <h4>Nemotron Super‑VL watched the rollout</h4>
+      <p>The robot walks forward while keeping its arms largely down by its sides. The right hand remains at approximately waist level (around 0.2m above the pelvis), which is far below the head height (approx 0.65m above the pelvis).</p>
+      <p><b>Problems:</b> The right hand is never raised above the head. There is no waving motion at head level; the arm stays low near the hips throughout the sequence.</p>
+      <p><b>Suggestion:</b> Command the right shoulder to elevate significantly to lift the hand above the head level (target &gt; 0.65m pelvis height) and implement a side-to-side oscillation at that height.</p>
+      <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
+import jax.numpy as jp
+
+SCALES = {
+    &quot;hand_reach&quot;: 0.0,       # disable base reach term
+    &quot;hand_height&quot;: 2.0,      # precision tracking near target (above head)
+    &quot;hand_rise&quot;: 1.0,        # dense shaping: reward any upward progress from rest
+    &quot;hand_wave_y&quot;: 2.0,      # side-to-side waving (tighter tracking)
+}
+
+def extra_rewards(env, data, action, info):
+    pelvis = data.site_xpos[env._pelvis_imu_site_id]
+    R = data.site_xmat[env._pelvis_imu_site_id].reshape(3, 3)
+    rh_world = data.site_xpos[env._hands_site_id[1]]
+    rh_pelvis = R.T @ (rh_world - pelvis)
+    hand_z = rh_pelvis[2]
+    hand_y = rh_pelvis[1]
+
+    # 1) Precision height tracking: target above head (0.70m), tight sigma for final accuracy
+    height_target = 0.70
+    height_err = hand_z - height_target
+    height_reward = jp.exp(-height_err**2 / (0.15**2))  # sigma=0.15m: strong gradient near target
+
+    # 2) Dense shaping term: grows monotonically from rest (z≈0.02) to target
+    # tanh((z - z_rest)/scale) ~0 at rest, ~0.73 at 0.3m, ~0.98 at 0.7m
+    z_rest = 0.022
+    rise_reward = jp.tanh((hand_z - z_rest) / 0.3)
+
+    # 3) Waving: sinusoidal y target at 1.5 Hz, amplitude 0.15m around y≈-0.20
+    freq = 1.5
+    y_center = -0.20
+    amp = 0.15
+    y_target = y_center + amp * jp.sin(2.0 * jp.pi * freq * data.time)
+    wave_err = hand_y - y_target
+    wave_reward = jp.exp(-wave_err**2 / (0.10**2))  # tighter sigma=0.10m to encourage full amplitude
+
+    return {
+        &quot;hand_height&quot;: height_reward,
+        &quot;hand_rise&quot;: rise_reward,
+        &quot;hand_wave_y&quot;: wave_reward,
+    }
+</code></pre></details>
+    </div>
+  </div>
+</article>
+<article class="iter">
+  <header><h3>Round 3</h3><span class="score">critic –</span></header>
+  <div class="cols">
+    <div>
+      <video src="run1/iter_3.mp4" controls muted loop playsinline preload="metadata"></video>
+      <div class="gauge"><span class="fill-mean" style="width:49.0%"></span><span class="fill-max" style="left:59.3%"></span><span class="mark" style="left:44.5%"><i>shoulder</i></span><span class="mark" style="left:77.0%"><i>head top</i></span></div><div class="muted small">right hand above pelvis: mean 0.41 m, max 0.50 m</div>
+      <svg viewBox="0 0 260 60" preserveAspectRatio="none" class="spark" role="img" aria-label="training reward curve"><path d="M4.0,56.0 L22.0,46.5 L40.0,55.3 L58.0,36.4 L76.0,53.2 L94.0,45.7 L112.0,42.8 L130.0,29.0 L148.0,24.0 L166.0,34.7 L184.0,29.6 L202.0,4.0 L220.0,22.0 L238.0,24.1 L256.0,5.8" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="muted small">training reward 20.3 → 29.7 over 16M steps</div>
+    </div>
+    <div>
+      <h4>Nemotron Super‑VL watched the rollout</h4>
+      <p></p>
+      <p><b>Problems:</b> </p>
+      <p><b>Suggestion:</b> </p>
+      <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
+import jax.numpy as jp
+
+SCALES = {
+    &quot;hand_reach&quot;: 0.0,        # disable base reach term
+    &quot;hand_height&quot;: 3.0,       # precision height tracking (wider sigma for gradient from mid-height)
+    &quot;hand_rise&quot;: 1.5,         # linear shaping: steady push from rest to above head
+    &quot;hand_wave_y&quot;: 2.0,       # waving, gated by height so it only counts above chest
+    &quot;hand_above_head&quot;: 1.0,   # bonus for crossing head height (0.65m)
+}
+
+def extra_rewards(env, data, action, info):
+    pelvis = data.site_xpos[env._pelvis_imu_site_id]
+    R = data.site_xmat[env._pelvis_imu_site_id].reshape(3, 3)
+    rh_world = data.site_xpos[env._hands_site_id[1]]
+    rh_pelvis = R.T @ (rh_world - pelvis)
+    hand_z = rh_pelvis[2]
+    hand_y = rh_pelvis[1]
+
+    z_rest = 0.022
+    head_height = 0.648
+    target_height = 0.70
+
+    # 1) Precision height tracking: wider sigma (0.25) so gradient reaches down to ~0.4m
+    height_err = hand_z - target_height
+    height_reward = jp.exp(-height_err**2 / (0.25**2))
+
+    # 2) Linear rise shaping: 0 at rest, 0.5 at ~0.37m, 1.0 at ~0.72m (no early saturation)
+    rise_reward = jp.clip((hand_z - z_rest) / 0.7, 0.0, 1.0)
+
+    # 3) Height gate: ~0 below 0.5m, ~1 above 0.6m (couples waving to high hand)
+    # sigmoid(x) = 1 / (1 + exp(-x))
+    gate_x = 10.0 * (hand_z - 0.55)
+    height_gate = 1.0 / (1.0 + jp.exp(-gate_x))
+
+    # 4) Waving target: 1.5 Hz, amplitude 0.15m around y=-0.20
+    freq = 1.5
+    y_center = -0.20
+    amp = 0.15
+    y_target = y_center + amp * jp.sin(2.0 * jp.pi * freq * data.time)
+    wave_err = hand_y - y_target
+    wave_reward = jp.exp(-wave_err**2 / (0.10**2))
+    wave_reward_gated = wave_reward * height_gate
+
+    # 5) Above-head bonus: sharp sigmoid at 0.65m
+    above_x = 20.0 * (hand_z - 0.65)
+    above_head_reward = 1.0 / (1.0 + jp.exp(-above_x))
+
+    return {
+        &quot;hand_height&quot;: height_reward,
+        &quot;hand_rise&quot;: rise_reward,
+        &quot;hand_wave_y&quot;: wave_reward_gated,
+        &quot;hand_above_head&quot;: above_head_reward,
+    }
+</code></pre></details>
+    </div>
+  </div>
+</article>
+</section>
+<section class="run">
+  <p class='kicker'>Stage 2 · continuing from the best checkpoint</p><h2>“raise the right hand above the head and wave it side to side while walking”</h2>
+  <p class="muted">3 rounds of write → train → watch → improve, fully automatic.</p>
+  
+<article class="iter">
+  <header><h3>Round 1</h3><span class="score">critic 7/10</span></header>
+  <div class="cols">
+    <div>
+      <video src="run2/iter_1.mp4" controls muted loop playsinline preload="metadata"></video>
+      <div class="gauge"><span class="fill-mean" style="width:68.3%"></span><span class="fill-max" style="left:71.6%"></span><span class="mark" style="left:44.5%"><i>shoulder</i></span><span class="mark" style="left:77.0%"><i>head top</i></span></div><div class="muted small">right hand above pelvis: mean 0.57 m, max 0.60 m</div>
+      <svg viewBox="0 0 260 60" preserveAspectRatio="none" class="spark" role="img" aria-label="training reward curve"><path d="M4.0,33.9 L22.0,14.2 L40.0,47.0 L58.0,20.1 L76.0,4.0 L94.0,44.5 L112.0,5.3 L130.0,20.8 L148.0,15.8 L166.0,56.0 L184.0,15.6 L202.0,26.2 L220.0,26.9 L238.0,26.7 L256.0,4.9" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="muted small">training reward 66.5 → 70.8 over 23M steps</div>
+    </div>
+    <div>
+      <h4>Nemotron Super‑VL watched the rollout</h4>
+      <p>The robot raises its right hand (confirmed by simulator data as the elevated limb) to near head level while shifting its stance and stepping, indicating a walking motion. The hand exhibits some sideways movement.</p>
+      <p><b>Problems:</b> The hand&#x27;s maximum height (0.603m) does not clearly exceed the head top height (approx 0.648m), so it is not strictly raised &#x27;above the head&#x27;. The side-to-side waving motion is subtle.</p>
+      <p><b>Suggestion:</b> Increase the target height for the right hand to clearly surpass 0.65m and amplify the sideways y-axis movement to create a more distinct</p>
+      <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
+import jax.numpy as jp
+
+import jax
+import jax.numpy as jp
+
+SCALES = {
+    &quot;hand_reach&quot;: 0.0,        # disable base reach term
+    &quot;hand_height&quot;: 2.5,       # precision height tracking (wider sigma for gradient from mid-height)
+    &quot;hand_rise&quot;: 1.5,         # linear shaping: steady push from rest to above head
+    &quot;hand_wave_y&quot;: 2.5,       # waving, gated by height so it only counts above chest
+    &quot;hand_above_head&quot;: 1.0,   # bonus for crossing head height (0.65m)
+}
+
+def extra_rewards(env, data, action, info):
+    pelvis = data.site_xpos[env._pelvis_imu_site_id]
+    R = data.site_xmat[env._pelvis_imu_site_id].reshape(3, 3)
+    rh_world = data.site_xpos[env._hands_site_id[1]]
+    rh_pelvis = R.T @ (rh_world - pelvis)
+    hand_z = rh_pelvis[2]
+    hand_y = rh_pelvis[1]
+
+    z_rest = 0.022
+    head_height = 0.648
+    target_height = 0.68          # safely below max 0.792, above head 0.648
+
+    # 1) Precision height tracking: wider sigma (0.3) so gradient reaches down to ~0.35m
+    height_err = hand_z - target_height
+    height_reward = jp.exp(-height_err**2 / (0.3**2))
+
+    # 2) Linear rise shaping: 0 at rest, 1.0 at target_height (no early saturation)
+    rise_reward = jp.clip((hand_z - z_rest) / target_height, 0.0, 1.0)
+
+    # 3) Height gate: ~0 below 0.45m, ~0.5 at 0.5m, ~1 above 0.6m (couples waving to high hand)
+    gate_x = 10.0 * (hand_z - 0.5)
+    height_gate = 1.0 / (1.0 + jp.exp(-gate_x))
+
+    # 4) Waving target: 1.5 Hz, amplitude 0.2m around y=-0.10 (shoulder line when arm raised)
+    freq = 1.5
+    y_center = -0.10
+    amp = 0.20
+    y_target = y_center + amp * jp.sin(2.0 * jp.pi * freq * data.time)
+    wave_err = hand_y - y_target
+    wave_reward = jp.exp(-wave_err**2 / (0.15**2))   # wider sigma for learning
+    wave_reward_gated = wave_reward * height_gate
+
+    # 5) Above-head bonus: sigmoid at 0.65m
+    above_x = 15.0 * (hand_z - 0.65)
+    above_head_reward = 1.0 / (1.0 + jp.exp(-above_x))
+
+    return {
+        &quot;hand_height&quot;: height_reward,
+        &quot;hand_rise&quot;: rise_reward,
+        &quot;hand_wave_y&quot;: wave_reward_gated,
+        &quot;hand_above_head&quot;: above_head_reward,
+    }
+</code></pre></details>
+    </div>
+  </div>
+</article>
+<article class="iter">
+  <header><h3>Round 2</h3><span class="score">critic 7/10</span></header>
+  <div class="cols">
+    <div>
+      <video src="run2/iter_2.mp4" controls muted loop playsinline preload="metadata"></video>
+      <div class="gauge"><span class="fill-mean" style="width:68.9%"></span><span class="fill-max" style="left:72.6%"></span><span class="mark" style="left:44.5%"><i>shoulder</i></span><span class="mark" style="left:77.0%"><i>head top</i></span></div><div class="muted small">right hand above pelvis: mean 0.58 m, max 0.61 m</div>
+      <svg viewBox="0 0 260 60" preserveAspectRatio="none" class="spark" role="img" aria-label="training reward curve"><path d="M4.0,45.9 L20.8,19.9 L37.6,43.6 L54.4,35.9 L71.2,22.8 L88.0,56.0 L104.8,35.2 L121.6,34.2 L138.4,22.1 L155.2,44.4 L172.0,29.5 L188.8,4.0 L205.6,25.9 L222.4,35.8 L239.2,26.5 L256.0,27.9" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="muted small">training reward 68.6 → 72.8 over 25M steps</div>
+    </div>
+    <div>
+      <h4>Nemotron Super‑VL watched the rollout</h4>
+      <p>The robot successfully raises its right hand (identified via simulator data as the arm with negative y-coordinate and high z-height) to near head level. It maintains an upright posture throughout the sequence (stats: stayed upright=True, 500/500 steps survived). The hand is held up while the robot shifts its stance, resembling a wave or greeting gesture.</p>
+      <p><b>Problems:</b> While the hand is raised high (mean height 0.58m, max 0.611m), the reference geometry indicates the head top is at 0.648m above the pelvis. Thus, the hand does not strictly clear the top of the head, falling slightly short of the &#x27;above the head&#x27; requirement. The &#x27;side to side&#x27; waving motion is subtle and mostly consists of body rotation rather than distinct lateral hand movement.</p>
+      <p><b>Suggestion:</b> Increase the target elevation for the right hand to ensure it exceeds the head top height (0.648m). Program a more explicit lateral oscillation of the wrist/arm to better satisfy the &#x27;wave side to side&#x27; component.</p>
+      <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
+import jax.numpy as jp
+
+import jax
+import jax.numpy as jp
+
+SCALES = {
+    &quot;hand_reach&quot;: 0.0,
+    &quot;hand_height&quot;: 3.0,
+    &quot;hand_rise&quot;: 1.5,
+    &quot;hand_wave_y&quot;: 3.0,
+    &quot;hand_above_head&quot;: 1.5,
+}
+
+def extra_rewards(env, data, action, info):
+    pelvis = data.site_xpos[env._pelvis_imu_site_id]
+    R = data.site_xmat[env._pelvis_imu_site_id].reshape(3, 3)
+    rh_world = data.site_xpos[env._hands_site_id[1]]
+    rh_pelvis = R.T @ (rh_world - pelvis)
+    hand_z = rh_pelvis[2]
+    hand_y = rh_pelvis[1]
+
+    z_rest = 0.022
+    head_height = 0.648
+    target_height = 0.70          # clearly above head (0.648), below max (0.792)
+
+    # 1) Precision height tracking: sigma 0.25 gives usable gradient down to ~0.4m
+    height_err = hand_z - target_height
+    height_reward = jp.exp(-height_err**2 / (0.25**2))
+
+    # 2) Linear rise shaping: 0 at rest, 1.0 at target_height
+    rise_reward = jp.clip((hand_z - z_rest) / target_height, 0.0, 1.0)
+
+    # 3) Height gate: waving only counts when hand is above chest (~0.5m)
+    gate_x = 10.0 * (hand_z - 0.5)
+    height_gate = 1.0 / (1.0 + jp.exp(-gate_x))
+
+    # 4) Waving target: 1.5 Hz, center -0.15 (near shoulder line), amplitude 0.15
+    freq = 1.5
+    y_center = -0.15
+    amp = 0.15
+    y_target = y_center + amp * jp.sin(2.0 * jp.pi * freq * data.time)
+    wave_err = hand_y - y_target
+    wave_reward = jp.exp(-wave_err**2 / (0.12**2))   # tighter tracking for crisper waves
+    wave_reward_gated = wave_reward * height_gate
+
+    # 5) Above-head bonus: sharper sigmoid at 0.65m, stronger weight
+    above_x = 20.0 * (hand_z - 0.65)
+    above_head_reward = 1.0 / (1.0 + jp.exp(-above_x))
+
+    return {
+        &quot;hand_height&quot;: height_reward,
+        &quot;hand_rise&quot;: rise_reward,
+        &quot;hand_wave_y&quot;: wave_reward_gated,
+        &quot;hand_above_head&quot;: above_head_reward,
+    }
+</code></pre></details>
+    </div>
+  </div>
+</article>
+<article class="iter best">
+  <header><h3>Round 3</h3><span class="score">critic 8/10</span><span class="badge">best</span></header>
+  <div class="cols">
+    <div>
+      <video src="run2/iter_3.mp4" controls muted loop playsinline preload="metadata"></video>
+      <div class="gauge"><span class="fill-mean" style="width:70.0%"></span><span class="fill-max" style="left:73.8%"></span><span class="mark" style="left:44.5%"><i>shoulder</i></span><span class="mark" style="left:77.0%"><i>head top</i></span></div><div class="muted small">right hand above pelvis: mean 0.59 m, max 0.62 m</div>
+      <svg viewBox="0 0 260 60" preserveAspectRatio="none" class="spark" role="img" aria-label="training reward curve"><path d="M4.0,53.0 L22.0,21.1 L40.0,51.0 L58.0,23.5 L76.0,4.0 L94.0,41.3 L112.0,38.8 L130.0,5.0 L148.0,8.0 L166.0,50.2 L184.0,38.9 L202.0,18.5 L220.0,56.0 L238.0,45.6 L256.0,34.3" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="muted small">training reward 62.6 → 65.7 over 23M steps</div>
+    </div>
+    <div>
+      <h4>Nemotron Super‑VL watched the rollout</h4>
+      <p>The robot successfully raises its right hand (identified via simulator data as the high hand at ~0.59m mean height) to approximately head level and waves it side-to-side (y-axis range -0.354 to -0.127m) while maintaining an upright walking posture across the frames.</p>
+      <p><b>Problems:</b> The right hand reaches a max height of 0.621m, which is slightly below the approximate head top height of 0.648m, so it does not clearly go &#x27;above&#x27; the head. The waving motion is present but somewhat contained.</p>
+      <p><b>Suggestion:</b> Increase the target height for the right hand to clearly exceed the head top and expand the sideways range of motion for a more exaggerated wave.</p>
+      <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
+import jax.numpy as jp
+
+import jax
+import jax.numpy as jp
+
+SCALES = {
+    &quot;hand_reach&quot;: 0.0,
+    &quot;hand_height&quot;: 3.0,
+    &quot;hand_rise&quot;: 1.5,
+    &quot;hand_wave_y&quot;: 3.5,
+    &quot;hand_above_head&quot;: 2.0,
+}
+
+def extra_rewards(env, data, action, info):
+    pelvis = data.site_xpos[env._pelvis_imu_site_id]
+    R = data.site_xmat[env._pelvis_imu_site_id].reshape(3, 3)
+    rh_world = data.site_xpos[env._hands_site_id[1]]
+    rh_pelvis = R.T @ (rh_world - pelvis)
+    hand_z = rh_pelvis[2]
+    hand_y = rh_pelvis[1]
+
+    z_rest = 0.022
+    head_height = 0.648
+    target_height = 0.70          # clearly above head (0.648), below max (0.792)
+
+    # 1) Precision height tracking: sigma 0.22 for sharper peak at target
+    height_err = hand_z - target_height
+    height_reward = jp.exp(-height_err**2 / (0.22**2))
+
+    # 2) Linear rise shaping: 0 at rest, 1.0 at target_height
+    rise_reward = jp.clip((hand_z - z_rest) / target_height, 0.0, 1.0)
+
+    # 3) Height gate: waving only counts when hand is above 0.6m (near head)
+    gate_x = 12.0 * (hand_z - 0.6)
+    height_gate = 1.0 / (1.0 + jp.exp(-gate_x))
+
+    # 4) Waving target: 1.5 Hz, center -0.15 (shoulder line), amplitude 0.20 for visible waves
+    freq = 1.5
+    y_center = -0.15
+    amp = 0.20
+    y_target = y_center + amp * jp.sin(2.0 * jp.pi * freq * data.time)
+    wave_err = hand_y - y_target
+    wave_reward = jp.exp(-wave_err**2 / (0.12**2))
+    wave_reward_gated = wave_reward * height_gate
+
+    # 5) Above-head bonus: sharper sigmoid at 0.65m, stronger weight
+    above_x = 25.0 * (hand_z - 0.65)
+    above_head_reward = 1.0 / (1.0 + jp.exp(-above_x))
+
+    return {
+        &quot;hand_height&quot;: height_reward,
+        &quot;hand_rise&quot;: rise_reward,
+        &quot;hand_wave_y&quot;: wave_reward_gated,
+        &quot;hand_above_head&quot;: above_head_reward,
+    }
+</code></pre></details>
+    </div>
+  </div>
+</article>
+</section>
+<footer>Built for the Nebius × NVIDIA Global AI Hackathon 2026 · Physical AI track · by Vishwa Venkatesh ·
+<a href="https://github.com/VishwaVenkatesh/nemotron-reward-engineer">source code</a></footer>
+</main></body></html>

@@ -1,0 +1,10 @@
+jax[cuda12]==0.10.2
+mujoco==3.12.0
+mujoco_mjx==3.12.0
+mujoco_playground
+brax>=0.14.2
+numpy
+mediapy
+etils
+openai
+python-dotenv

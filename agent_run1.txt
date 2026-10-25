@@ -1,0 +1,41 @@
+
+=== Iteration 1: Ultra writes the reward ===
+$ /home/vishwa-venkatesh/miniconda3/envs/g1/bin/python train_skill.py --reward /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_1/reward.py --check
+=== Iteration 1: training on GPU ===
+$ /home/vishwa-venkatesh/miniconda3/envs/g1/bin/python train_skill.py --reward /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_1/reward.py --restore /home/vishwa-venkatesh/logs/G1LocoManip-20260831-001835/checkpoints/000159744000 --timesteps 20000000 --logdir /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_1/train
+=== Iteration 1: rollout + Super-VL critique ===
+$ /home/vishwa-venkatesh/miniconda3/envs/g1/bin/python rollout_skill.py --reward /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_1/reward.py --checkpoint /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_1/train/checkpoints/000019496960 --outdir /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_1/rollout
+{
+  "score": 1,
+  "what_happens": "The robot remains upright and appears to take small steps or shift its weight, but its arms remain largely at its sides. The right hand is never raised above the head, and no waving motion occurs.",
+  "problems": "The primary task objective\u2014raising the right hand above the head and waving\u2014is completely ignored. The arm stays down by the hip or waist throughout the sequence.",
+  "suggestion": "Increase the reward weight for the 'hand_wave' and 'hand_reach' terms to prioritize the arm movement over locomotion, or modify the target pose to explicitly require the arm to be elevated."
+}
+
+=== Iteration 2: Ultra writes the reward ===
+$ /home/vishwa-venkatesh/miniconda3/envs/g1/bin/python train_skill.py --reward /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_2/reward.py --check
+=== Iteration 2: training on GPU ===
+$ /home/vishwa-venkatesh/miniconda3/envs/g1/bin/python train_skill.py --reward /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_2/reward.py --restore /home/vishwa-venkatesh/logs/G1LocoManip-20260831-001835/checkpoints/000159744000 --timesteps 20000000 --logdir /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_2/train
+=== Iteration 2: rollout + Super-VL critique ===
+$ /home/vishwa-venkatesh/miniconda3/envs/g1/bin/python rollout_skill.py --reward /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_2/reward.py --checkpoint /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_2/train/checkpoints/000021790720 --outdir /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_2/rollout
+{
+  "score": 1,
+  "what_happens": "The robot stands relatively still, shifting its weight slightly. In the later frames, it extends its left arm out to the side at shoulder height, but it never raises its right hand above its head, nor does it wave.",
+  "problems": "The robot uses the wrong arm (left instead of right), fails to raise the hand above head level, and does not perform a waving motion.",
+  "suggestion": "Modify the control policy to specifically target lifting the right arm vertically above the head and implementing a side-to-side oscillation for waving."
+}
+
+=== Iteration 3: Ultra writes the reward ===
+$ /home/vishwa-venkatesh/miniconda3/envs/g1/bin/python train_skill.py --reward /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_3/reward.py --check
+=== Iteration 3: training on GPU ===
+$ /home/vishwa-venkatesh/miniconda3/envs/g1/bin/python train_skill.py --reward /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_3/reward.py --restore /home/vishwa-venkatesh/logs/G1LocoManip-20260831-001835/checkpoints/000159744000 --timesteps 20000000 --logdir /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_3/train
+=== Iteration 3: rollout + Super-VL critique ===
+$ /home/vishwa-venkatesh/miniconda3/envs/g1/bin/python rollout_skill.py --reward /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_3/reward.py --checkpoint /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_3/train/checkpoints/000018350080 --outdir /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050/iter_3/rollout
+{
+  "score": 1,
+  "what_happens": "The robot remains mostly stationary, shifting its weight and turning to face the camera. It extends both arms out to the sides at shoulder level in the final frames, but never raises the right hand above the head, nor does it wave. There is no significant walking motion observed.",
+  "problems": "The primary task objective (raising hand above head and waving) is completely failed. The arms only reach shoulder height. Walking is not clearly demonstrated.",
+  "suggestion": "Adjust the control policy to prioritize lifting the arm vertically above the head and adding a lateral oscillation for waving, while maintaining a walking gait."
+}
+
+Done. Best iteration: 1 (score 1). Results in /home/vishwa-venkatesh/nebius-hack/g1-reward-engineer/runs/20261024-020050
