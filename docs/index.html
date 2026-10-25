@@ -20,6 +20,7 @@ h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 8px}h2{margin:48px 
 .ov-bar{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:3px}
 .ov-val{color:var(--muted);font-variant-numeric:tabular-nums}
 @media (max-width:640px){.ov-row{grid-template-columns:1fr 92px}.ov-label{grid-column:1/-1}}
+.hero{margin:28px 0 8px}.hero video{aspect-ratio:auto}.hero figcaption{color:var(--muted);font-size:14px;margin-top:6px}
 .iter{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0}
 .iter.best{border-color:var(--accent)}
 .iter header{display:flex;gap:12px;align-items:baseline;margin-bottom:12px}
@@ -47,7 +48,7 @@ a{color:var(--accent)}
 <span><b>Nemotron 3.5 Super‑VL</b> critiques</span><span>→ back to Ultra</span>
 </div>
 <p class="muted small">All models served through Nebius Token Factory. Starting policy: my whole‑body walk + reach controller for the G1.</p>
-
+<figure class="hero"><video src="before_after.mp4" autoplay muted loop playsinline controls></video><figcaption>Left: the first round. Right: the final round. Same robot, same starting policy; every reward in between was written by Nemotron 3 Ultra and judged by Nemotron 3.5 Super‑VL.</figcaption></figure>
 <section class="overview">
   <h2>Progress across every round</h2>
   <p class="muted small">Highest right‑hand height above the pelvis in each rollout (hand at rest: 0.02 m).

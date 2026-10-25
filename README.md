@@ -4,6 +4,8 @@
 
 Built for the **Nebius × NVIDIA Global AI Hackathon 2026 — Physical AI track**.
 
+![Round 1 vs final round](docs/before_after.gif)
+
 ▶ **Demo page:** https://vishwavenkatesh.github.io/nemotron-reward-engineer/
 ▶ **Video:** _YouTube link_
 
