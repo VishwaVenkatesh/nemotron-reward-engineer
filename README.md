@@ -111,6 +111,13 @@ critic points out in every final round.
 Starting from the same original policy: critic score **8 → 9 → 9** in three rounds, no falls. The critic confirms
 bent knees and a lowered pelvis throughout the gait (scored from video; the pelvis drop is not yet measured numerically).
 
+### Skill 3: carry a box (hold both hands together in front of the chest while walking)
+
+First run with the Tavily research step (8 sources). Critic score **8 → 7 → 8**, no falls. When round 2 scored
+lower, the agent automatically discarded it and continued round 3 from round 1's checkpoint. The critic's remaining
+note is that the arms start at the sides and take a few steps to rise; that comes from the starting pose, which a
+reward alone cannot change.
+
 ### Try the reward writer yourself
 
 `space/app.py` is a small Gradio app: type any skill, Nemotron 3 Ultra writes the reward live, and a plot shows how
