@@ -118,6 +118,41 @@ def write_reward(messages, path, max_repairs=3):
     raise RuntimeError("could not produce a working reward")
 
 
+def research(task, max_queries=2, per_query=4):
+    """Nano turns the skill into search queries; Tavily finds how researchers reward similar skills.
+    Returns (notes_for_ultra, sources). Skipped quietly if TAVILY_API_KEY is not set."""
+    key = os.environ.get("TAVILY_API_KEY")
+    if not key:
+        print("  (no TAVILY_API_KEY: skipping web research)", flush=True)
+        return "", []
+    import httpx
+    q_text = chat(FIXER, [{"role": "user", "content": (
+        f"A humanoid robot (Unitree G1) must learn this skill with reinforcement learning: {task}\n"
+        f"Write {max_queries} short web search queries (one per line, no numbering) to find how researchers "
+        "design reward functions for this kind of humanoid skill.")}], max_tokens=2000)
+    queries = [q.strip(" -*\"'0123456789.") for q in q_text.splitlines() if len(q.strip()) > 8][:max_queries]
+    queries = queries or [f"reinforcement learning reward function humanoid {task}"]
+    sources, notes = [], []
+    for q in queries:
+        try:
+            r = httpx.post("https://api.tavily.com/search", timeout=60,
+                           headers={"Authorization": f"Bearer {key}"},
+                           json={"query": q, "max_results": per_query, "search_depth": "advanced",
+                                 "include_answer": True})
+            r.raise_for_status()
+            d = r.json()
+        except Exception as e:
+            print(f"  Tavily search failed for {q!r}: {e}", flush=True)
+            continue
+        if d.get("answer"):
+            notes.append(f"Summary for '{q}': {d['answer']}")
+        for res in d.get("results", []):
+            sources.append({"query": q, "title": res.get("title", ""), "url": res.get("url", "")})
+            notes.append(f"- {res.get('title', '')} ({res.get('url', '')}): {res.get('content', '')[:600]}")
+    print(f"  Tavily: {len(sources)} sources from {len(queries)} queries", flush=True)
+    return "\n".join(notes), sources
+
+
 def probe_geometry():
     rc, out, err = run([PY, "train_skill.py", "--reward", "example_reward.py", "--probe"])
     lines = [l for l in out.splitlines() if l.startswith("{")]
@@ -168,6 +203,9 @@ def main():
     geometry = probe_geometry()
     print(json.dumps(geometry, indent=2), flush=True)
     json.dump(geometry, open(os.path.join(run_dir, "geometry.json"), "w"), indent=2)
+    print("=== Researching reward design (Nemotron Nano + Tavily) ===", flush=True)
+    notes, sources = research(args.task)
+    json.dump({"notes": notes, "sources": sources}, open(os.path.join(run_dir, "research.json"), "w"), indent=2)
     system = API_DOC + "\n\nMEASURED BODY GEOMETRY at rest (pelvis frame, metres: x forward, y left, z up):\n" + json.dumps(geometry, indent=2)
     messages = [{"role": "system", "content": system},
                 {"role": "user", "content": f"Skill to teach: {args.task}\nWrite the reward module."}]
@@ -176,6 +214,9 @@ def main():
         messages[-1]["content"] = (f"Skill to teach: {args.task}\n"
             "The starting policy was already trained with the reward below. Keep what works and improve it.\n"
             f"```python\n{prev}\n```\nWrite the improved reward module.")
+    if notes:
+        messages[-1]["content"] += ("\n\nWEB RESEARCH on how researchers reward similar skills (from Tavily). Use ideas that fit; "
+                                    "add a short comment in the code naming any idea you took from it:\n" + notes[:12000])
     history = []
     start_ckpt, best_score = args.base, -1
 

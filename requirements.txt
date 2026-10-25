@@ -8,3 +8,4 @@ mediapy
 etils
 openai
 python-dotenv
+httpx

@@ -114,10 +114,22 @@ def build_run(run_dir, idx, label=""):
   </div>
 </article>""")
     head = f"<p class='kicker'>{html.escape(label)}</p>" if label else ""
+    research_html = ""
+    rp = os.path.join(run_dir, "research.json")
+    if os.path.exists(rp):
+        seen, items = set(), []
+        for src in json.load(open(rp)).get("sources", []):
+            if src.get("url") and src["url"] not in seen:
+                seen.add(src["url"])
+                items.append(f'<li><a href="{html.escape(src["url"])}" rel="noopener">{html.escape(src.get("title") or src["url"])}</a></li>')
+        if items:
+            research_html = (f'<details class="research"><summary>Web research before writing the reward: '
+                             f'{len(items)} sources found by Nemotron Nano + Tavily</summary><ul>{"".join(items)}</ul></details>')
     return f"""
 <section class="run">
   {head}<h2>“{html.escape(report['task'])}”</h2>
   <p class="muted">{len(report['history'])} rounds of write → train → watch → improve, fully automatic.</p>
+  {research_html}
   {''.join(cards)}
 </section>""", progress, geo
 
@@ -168,6 +180,8 @@ h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 8px}h2{margin:48px 
 .ov-val{color:var(--muted);font-variant-numeric:tabular-nums}
 @media (max-width:640px){.ov-row{grid-template-columns:1fr 92px}.ov-label{grid-column:1/-1}}
 .hero{margin:28px 0 8px}.hero video{aspect-ratio:auto}.hero figcaption{color:var(--muted);font-size:14px;margin-top:6px}
+.research{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:12px 0}
+.research ul{margin:8px 0 0;padding-left:20px;font-size:14px}
 .iter{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0}
 .iter.best{border-color:var(--accent)}
 .iter header{display:flex;gap:12px;align-items:baseline;margin-bottom:12px}
@@ -190,7 +204,7 @@ a{color:var(--accent)}
 <p class="lede">Type a skill in plain English. An AI agent writes the reinforcement‑learning reward, trains a Unitree G1 humanoid,
 <b>watches the result</b>, and rewrites the reward until the robot gets it right. No human tuning in the loop.</p>
 <div class="pipeline">
-<span><b>Nemotron 3 Ultra</b> writes reward code</span><span>→ compile check; <b>Nemotron Nano</b> repairs errors</span>
+<span><b>Nemotron Nano + Tavily</b> research the skill</span><span>→ <b>Nemotron 3 Ultra</b> writes reward code</span><span>→ compile check; <b>Nemotron Nano</b> repairs errors</span>
 <span>→ PPO fine‑tune in MuJoCo MJX</span><span>→ rollout video + measured hand positions</span>
 <span><b>Nemotron 3.5 Super‑VL</b> critiques</span><span>→ back to Ultra</span>
 </div>

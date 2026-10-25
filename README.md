@@ -21,6 +21,9 @@ Reward design is the slowest part of robot learning. A researcher writes a rewar
 "raise the right hand above the head and wave while walking"
         │
         ▼
+Nemotron Nano + Tavily ── search how researchers reward this kind of skill
+        │
+        ▼
 Nemotron 3 Ultra ── writes a JAX reward module (SCALES + extra_rewards)
         │             └─ compile check in the real env; errors → Nemotron Nano repairs (Ultra if Nano fails)
         ▼
@@ -37,6 +40,7 @@ Nemotron 3.5 Super-VL ── watches the frames + numbers, scores 0–10, explai
 
 Design details that made it work:
 
+- **Web research first.** Nemotron Nano turns the skill into search queries and Tavily finds how researchers reward similar skills. Ultra gets the findings and notes in code comments which ideas it used.
 - **Grounded geometry.** Before writing any reward, the agent measures the robot's body in simulation (shoulder height, arm length, highest reachable hand height, head height) and gives these numbers to Ultra. Without them, Ultra guessed targets that were only shoulder-high.
 - **Numbers + vision for the critic.** The robot often faces the camera, so left and right are mirrored in the image. The critic receives exact hand positions from the simulator alongside the frames.
 - **Self-repair with model routing.** Generated code is compiled in the real environment before any GPU time is spent. Compile errors go to Nemotron Nano first (a quick fix rarely needs the biggest model), and back to Ultra if Nano fails (e.g. it once used `jp.sigmoid`, which does not exist, and fixed it on the next attempt).
@@ -64,6 +68,7 @@ Requirements: Linux, NVIDIA GPU, a Nebius Token Factory API key, and a trained G
 conda create -n g1 python=3.11 -y && conda activate g1
 pip install -r requirements.txt
 echo "NEBIUS_API_KEY=..." > .env
+echo "TAVILY_API_KEY=..." >> .env    # optional: web research step
 
 # optional: train the starting walk + reach policy (~200M steps)
 python train_locomanip.py
