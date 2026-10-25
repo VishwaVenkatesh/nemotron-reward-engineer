@@ -21,6 +21,8 @@ h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 8px}h2{margin:48px 
 .ov-val{color:var(--muted);font-variant-numeric:tabular-nums}
 @media (max-width:640px){.ov-row{grid-template-columns:1fr 92px}.ov-label{grid-column:1/-1}}
 .hero{margin:28px 0 8px}.hero video{aspect-ratio:auto}.hero figcaption{color:var(--muted);font-size:14px;margin-top:6px}
+.research{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:12px 0}
+.research ul{margin:8px 0 0;padding-left:20px;font-size:14px}
 .iter{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0}
 .iter.best{border-color:var(--accent)}
 .iter header{display:flex;gap:12px;align-items:baseline;margin-bottom:12px}
@@ -43,7 +45,7 @@ a{color:var(--accent)}
 <p class="lede">Type a skill in plain English. An AI agent writes the reinforcement‑learning reward, trains a Unitree G1 humanoid,
 <b>watches the result</b>, and rewrites the reward until the robot gets it right. No human tuning in the loop.</p>
 <div class="pipeline">
-<span><b>Nemotron 3 Ultra</b> writes reward code</span><span>→ compile check; <b>Nemotron Nano</b> repairs errors</span>
+<span><b>Nemotron Nano + Tavily</b> research the skill</span><span>→ <b>Nemotron 3 Ultra</b> writes reward code</span><span>→ compile check; <b>Nemotron Nano</b> repairs errors</span>
 <span>→ PPO fine‑tune in MuJoCo MJX</span><span>→ rollout video + measured hand positions</span>
 <span><b>Nemotron 3.5 Super‑VL</b> critiques</span><span>→ back to Ultra</span>
 </div>
@@ -53,11 +55,12 @@ a{color:var(--accent)}
   <h2>Progress across every round</h2>
   <p class="muted small">Highest right‑hand height above the pelvis in each rollout (hand at rest: 0.02 m).
   Grey lines: shoulder (0.38 m) and top of head (0.65 m). Right column: vision‑critic score.</p>
-  <div class="ov-row"><span class="ov-label">Stage 1 · starting from my walk + reach policy · round 1</span><span class="ov-track"><span class="ov-bar" style="width:40.4%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.32 m</span></div><div class="ov-row"><span class="ov-label">Stage 1 · starting from my walk + reach policy · round 2</span><span class="ov-track"><span class="ov-bar" style="width:34.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.27 m · 2/10</span></div><div class="ov-row"><span class="ov-label">Stage 1 · starting from my walk + reach policy · round 3</span><span class="ov-track"><span class="ov-bar" style="width:63.0%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.50 m</span></div><div class="ov-row"><span class="ov-label">Stage 2 · continuing from the best checkpoint · round 1</span><span class="ov-track"><span class="ov-bar" style="width:76.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.60 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Stage 2 · continuing from the best checkpoint · round 2</span><span class="ov-track"><span class="ov-bar" style="width:77.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.61 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Stage 2 · continuing from the best checkpoint · round 3</span><span class="ov-track"><span class="ov-bar" style="width:78.4%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.62 m · 8/10</span></div><div class="ov-row"><span class="ov-label">Stage 3 · final rounds · round 1</span><span class="ov-track"><span class="ov-bar" style="width:79.8%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.63 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Stage 3 · final rounds · round 2</span><span class="ov-track"><span class="ov-bar" style="width:80.6%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.64 m · 8/10</span></div>
+  <div class="ov-row"><span class="ov-label">Skill 1 · Stage 1 · starting from my walk + reach policy · round 1</span><span class="ov-track"><span class="ov-bar" style="width:40.4%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.32 m</span></div><div class="ov-row"><span class="ov-label">Skill 1 · Stage 1 · starting from my walk + reach policy · round 2</span><span class="ov-track"><span class="ov-bar" style="width:34.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.27 m · 2/10</span></div><div class="ov-row"><span class="ov-label">Skill 1 · Stage 1 · starting from my walk + reach policy · round 3</span><span class="ov-track"><span class="ov-bar" style="width:63.0%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.50 m</span></div><div class="ov-row"><span class="ov-label">Skill 1 · Stage 2 · continuing from the best checkpoint · round 1</span><span class="ov-track"><span class="ov-bar" style="width:76.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.60 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Skill 1 · Stage 2 · continuing from the best checkpoint · round 2</span><span class="ov-track"><span class="ov-bar" style="width:77.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.61 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Skill 1 · Stage 2 · continuing from the best checkpoint · round 3</span><span class="ov-track"><span class="ov-bar" style="width:78.4%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.62 m · 8/10</span></div><div class="ov-row"><span class="ov-label">Skill 1 · Stage 3 · final rounds · round 1</span><span class="ov-track"><span class="ov-bar" style="width:79.8%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.63 m · 7/10</span></div><div class="ov-row"><span class="ov-label">Skill 1 · Stage 3 · final rounds · round 2</span><span class="ov-track"><span class="ov-bar" style="width:80.6%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.64 m · 8/10</span></div><div class="ov-row"><span class="ov-label">Skill 2 · half squat · starting from my walk + reach policy · round 1</span><span class="ov-track"><span class="ov-bar" style="width:25.3%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.20 m · 8/10</span></div><div class="ov-row"><span class="ov-label">Skill 2 · half squat · starting from my walk + reach policy · round 2</span><span class="ov-track"><span class="ov-bar" style="width:21.0%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.17 m · 9/10</span></div><div class="ov-row"><span class="ov-label">Skill 2 · half squat · starting from my walk + reach policy · round 3</span><span class="ov-track"><span class="ov-bar" style="width:18.1%"></span><span class="mark" style="left:47.3%"></span><span class="mark" style="left:81.8%"></span></span><span class="ov-val">0.14 m · 9/10</span></div>
 </section>
 <section class="run">
-  <p class='kicker'>Stage 1 · starting from my walk + reach policy</p><h2>“raise the right hand above the head and wave it side to side while walking”</h2>
+  <p class='kicker'>Skill 1 · Stage 1 · starting from my walk + reach policy</p><h2>“raise the right hand above the head and wave it side to side while walking”</h2>
   <p class="muted">3 rounds of write → train → watch → improve, fully automatic.</p>
+  
   
 <article class="iter">
   <header><h3>Round 1</h3><span class="score">critic –</span></header>
@@ -246,8 +249,9 @@ def extra_rewards(env, data, action, info):
 </article>
 </section>
 <section class="run">
-  <p class='kicker'>Stage 2 · continuing from the best checkpoint</p><h2>“raise the right hand above the head and wave it side to side while walking”</h2>
+  <p class='kicker'>Skill 1 · Stage 2 · continuing from the best checkpoint</p><h2>“raise the right hand above the head and wave it side to side while walking”</h2>
   <p class="muted">3 rounds of write → train → watch → improve, fully automatic.</p>
+  
   
 <article class="iter">
   <header><h3>Round 1</h3><span class="score">critic 7/10</span></header>
@@ -473,8 +477,9 @@ def extra_rewards(env, data, action, info):
 </article>
 </section>
 <section class="run">
-  <p class='kicker'>Stage 3 · final rounds</p><h2>“raise the right hand above the head and wave it side to side while walking”</h2>
+  <p class='kicker'>Skill 1 · Stage 3 · final rounds</p><h2>“raise the right hand above the head and wave it side to side while walking”</h2>
   <p class="muted">2 rounds of write → train → watch → improve, fully automatic.</p>
+  
   
 <article class="iter">
   <header><h3>Round 1</h3><span class="score">critic 7/10</span></header>
@@ -643,6 +648,152 @@ def extra_rewards(env, data, action, info):
         &quot;hand_wave_y&quot;: wave_reward_gated,
         &quot;hand_above_head&quot;: above_head_reward,
         &quot;elbow_up&quot;: elbow_reward,
+    }
+</code></pre></details>
+    </div>
+  </div>
+</article>
+</section>
+<section class="run">
+  <p class='kicker'>Skill 2 · half squat · starting from my walk + reach policy</p><h2>“walk in a half squat: lower the pelvis by about 15 cm and keep it low while walking”</h2>
+  <p class="muted">3 rounds of write → train → watch → improve, fully automatic.</p>
+  
+  
+<article class="iter">
+  <header><h3>Round 1</h3><span class="score">critic 8/10</span></header>
+  <div class="cols">
+    <div>
+      <video src="run4/iter_1.mp4" controls muted loop playsinline preload="metadata"></video>
+      <div class="gauge"><span class="fill-mean" style="width:21.1%"></span><span class="fill-max" style="left:23.8%"></span><span class="mark" style="left:44.5%"><i>shoulder</i></span><span class="mark" style="left:77.0%"><i>head top</i></span></div><div class="muted small">right hand above pelvis: mean 0.18 m, max 0.20 m</div>
+      <svg viewBox="0 0 260 60" preserveAspectRatio="none" class="spark" role="img" aria-label="training reward curve"><path d="M4.0,20.2 L19.8,15.9 L35.5,39.7 L51.2,19.9 L67.0,15.4 L82.8,22.4 L98.5,31.2 L114.2,33.8 L130.0,15.7 L145.8,49.2 L161.5,24.7 L177.2,25.3 L193.0,56.0 L208.8,50.0 L224.5,32.1 L240.2,4.0 L256.0,27.4" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="muted small">training reward 59.7 → 58.5 over 26M steps</div>
+    </div>
+    <div>
+      <h4>Nemotron Super‑VL watched the rollout</h4>
+      <p>The robot successfully walks forward while maintaining a crouched, half-squat posture with bent knees and a lowered pelvis. It remains balanced and upright throughout the sequence without falling.</p>
+      <p><b>Problems:</b> The pelvis height appears to fluctuate slightly, rising a bit in the final frames where the robot faces the camera. The right arm is held noticeably higher than the left arm based on the measured data.</p>
+      <p><b>Suggestion:</b> Maintain a more consistent pelvis height throughout the gait cycle to better sustain the half-squat position, and adjust arm positioning for better symmetry.</p>
+      
+      <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
+import jax.numpy as jp
+
+SCALES = {
+    &quot;pelvis_height&quot;: 1.5,
+}
+
+def extra_rewards(env, data, action, info):
+    pelvis = data.site_xpos[env._pelvis_imu_site_id]
+    # Target: 15 cm below nominal rest height (0.672 - 0.15 = 0.522 m)
+    target_height = 0.522
+    height_err = pelvis[2] - target_height
+    # Wide sigma (0.1 m^2) so reward is still ~0.8 at rest (0.15 m error)
+    # and ~0.4 at 0.3 m error, giving useful gradient from the start.
+    sigma = 0.1
+    pelvis_height_reward = jp.exp(-height_err**2 / sigma)
+    return {&quot;pelvis_height&quot;: pelvis_height_reward}
+</code></pre></details>
+    </div>
+  </div>
+</article>
+<article class="iter best">
+  <header><h3>Round 2</h3><span class="score">critic 9/10</span><span class="badge">best</span></header>
+  <div class="cols">
+    <div>
+      <video src="run4/iter_2.mp4" controls muted loop playsinline preload="metadata"></video>
+      <div class="gauge"><span class="fill-mean" style="width:13.5%"></span><span class="fill-max" style="left:19.7%"></span><span class="mark" style="left:44.5%"><i>shoulder</i></span><span class="mark" style="left:77.0%"><i>head top</i></span></div><div class="muted small">right hand above pelvis: mean 0.11 m, max 0.17 m</div>
+      <svg viewBox="0 0 260 60" preserveAspectRatio="none" class="spark" role="img" aria-label="training reward curve"><path d="M4.0,56.0 L18.8,37.8 L33.6,45.4 L48.5,27.1 L63.3,4.0 L78.1,30.8 L92.9,23.8 L107.8,30.5 L122.6,28.8 L137.4,40.5 L152.2,11.8 L167.1,18.1 L181.9,33.6 L196.7,35.6 L211.5,17.4 L226.4,20.3 L241.2,12.6 L256.0,37.4" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="muted small">training reward 43.0 → 46.4 over 28M steps</div>
+    </div>
+    <div>
+      <h4>Nemotron Super‑VL watched the rollout</h4>
+      <p>The robot successfully walks while maintaining a half-squat posture. Throughout the sequence, the knees remain bent and the pelvis stays low, consistent with the task requirement. The robot remains upright and completes the steps without falling.</p>
+      <p><b>Problems:</b> No significant problems are visible; the robot maintains the squat and balance effectively.</p>
+      <p><b>Suggestion:</b> The current behavior is good. Continue maintaining the low pelvis height during locomotion.</p>
+      
+      <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
+import jax.numpy as jp
+
+SCALES = {
+    &quot;pelvis_height&quot;: 2.0,
+    &quot;pelvis_vertical_vel&quot;: -0.5,
+    &quot;arm_height_symmetry&quot;: 0.5,
+    &quot;hand_reach&quot;: 0.0,  # disable conflicting reach term
+}
+
+def extra_rewards(env, data, action, info):
+    pelvis = data.site_xpos[env._pelvis_imu_site_id]
+    R = data.site_xmat[env._pelvis_imu_site_id].reshape(3, 3)
+    
+    # 1. Pelvis height target (15 cm below nominal 0.672)
+    target_height = 0.522
+    height_err = pelvis[2] - target_height
+    pelvis_height_reward = jp.exp(-height_err**2 / 0.1)
+    
+    # 2. Penalize vertical velocity of pelvis (use base linear vel z as proxy)
+    vel_z = data.qvel[2]
+    pelvis_vertical_vel_penalty = vel_z**2
+    
+    # 3. Arm height symmetry in pelvis frame
+    left_hand = data.site_xpos[env._hands_site_id[0]]
+    right_hand = data.site_xpos[env._hands_site_id[1]]
+    left_local = R.T @ (left_hand - pelvis)
+    right_local = R.T @ (right_hand - pelvis)
+    height_diff = right_local[2] - left_local[2]
+    arm_height_symmetry_reward = jp.exp(-height_diff**2 / 0.05)
+    
+    return {
+        &quot;pelvis_height&quot;: pelvis_height_reward,
+        &quot;pelvis_vertical_vel&quot;: pelvis_vertical_vel_penalty,
+        &quot;arm_height_symmetry&quot;: arm_height_symmetry_reward,
+    }
+</code></pre></details>
+    </div>
+  </div>
+</article>
+<article class="iter">
+  <header><h3>Round 3</h3><span class="score">critic 9/10</span></header>
+  <div class="cols">
+    <div>
+      <video src="run4/iter_3.mp4" controls muted loop playsinline preload="metadata"></video>
+      <div class="gauge"><span class="fill-mean" style="width:11.5%"></span><span class="fill-max" style="left:17.0%"></span><span class="mark" style="left:44.5%"><i>shoulder</i></span><span class="mark" style="left:77.0%"><i>head top</i></span></div><div class="muted small">right hand above pelvis: mean 0.10 m, max 0.14 m</div>
+      <svg viewBox="0 0 260 60" preserveAspectRatio="none" class="spark" role="img" aria-label="training reward curve"><path d="M4.0,55.6 L18.8,16.5 L33.6,48.2 L48.5,4.0 L63.3,7.5 L78.1,32.8 L92.9,39.5 L107.8,43.6 L122.6,13.4 L137.4,52.7 L152.2,19.7 L167.1,28.1 L181.9,56.0 L196.7,32.8 L211.5,21.0 L226.4,45.7 L241.2,15.6 L256.0,28.1" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="muted small">training reward 54.2 → 58.4 over 28M steps</div>
+    </div>
+    <div>
+      <h4>Nemotron Super‑VL watched the rollout</h4>
+      <p>The robot successfully walks while maintaining a half-squat posture. Throughout the sequence, its knees remain bent and the pelvis stays lowered relative to a standing position. It faces both away from and towards the camera, demonstrating stable bipedal locomotion in this crouched state without falling.</p>
+      <p><b>Problems:</b> No significant problems are visible; the robot remains upright and completes the steps as indicated by the stats (500/500 survived).</p>
+      <p><b>Suggestion:</b> The performance is strong. No specific suggestions are needed other than perhaps verifying the exact 15cm pelvis drop quantitatively if precision is critical, though visually the squat is maintained.</p>
+      
+      <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
+import jax.numpy as jp
+
+SCALES = {
+    &quot;pelvis_height&quot;: 2.5,
+    &quot;pelvis_vertical_vel&quot;: -0.5,
+    &quot;arm_height_symmetry&quot;: 0.8,
+    &quot;hand_reach&quot;: 0.0,
+}
+
+def extra_rewards(env, data, action, info):
+    pelvis = data.site_xpos[env._pelvis_imu_site_id]
+    R = data.site_xmat[env._pelvis_imu_site_id].reshape(3, 3)
+    
+    target_height = 0.522
+    height_err = pelvis[2] - target_height
+    pelvis_height_reward = jp.exp(-height_err**2 / 0.1)
+    
+    vel_z = data.qvel[2]
+    pelvis_vertical_vel_penalty = vel_z**2
+    
+    left_hand = data.site_xpos[env._hands_site_id[0]]
+    right_hand = data.site_xpos[env._hands_site_id[1]]
+    left_local = R.T @ (left_hand - pelvis)
+    right_local = R.T @ (right_hand - pelvis)
+    height_diff = right_local[2] - left_local[2]
+    arm_height_symmetry_reward = jp.exp(-height_diff**2 / 0.05)
+    
+    return {
+        &quot;pelvis_height&quot;: pelvis_height_reward,
+        &quot;pelvis_vertical_vel&quot;: pelvis_vertical_vel_penalty,
+        &quot;arm_height_symmetry&quot;: arm_height_symmetry_reward,
     }
 </code></pre></details>
     </div>
