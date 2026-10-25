@@ -117,6 +117,21 @@ bent knees and a lowered pelvis throughout the gait (scored from video; the pelv
 it responds as the hand rises from rest to full reach (no GPU needed):
 `pip install gradio jax openai matplotlib && NEBIUS_API_KEY=... python space/app.py`
 
+## Built during the hackathon
+
+The starting G1 walk + reach policy comes from my master's internship (Feb–Sept 2026) and is published at
+[g1-whole-body-loco-manipulation](https://github.com/VishwaVenkatesh/g1-whole-body-loco-manipulation); it is used only
+as the starting checkpoint. Everything in this repository was built during the hackathon (October 2026): the agent loop,
+LLM-written rewards, compile-check and self-repair, geometry probing, the vision critic, checkpoint chaining, model
+routing, the Tavily research step, the results page, the try-it app, and all new skills and their training runs.
+
+## Testing without a GPU
+
+- **Results page:** every round's video, reward code and critique: https://vishwavenkatesh.github.io/nemotron-reward-engineer/
+- **Try-it app:** `pip install gradio jax openai matplotlib && NEBIUS_API_KEY=... python space/app.py`, then type any skill.
+  Ultra writes the reward live and the plot shows how it responds as the hand rises (no simulator or GPU needed).
+- **Full loop:** needs an NVIDIA GPU and a starting checkpoint; see "Run it" above.
+
 ## Related work
 
 LLM-written rewards are an active research area. NVIDIA's **Eureka** (2023) showed that coding LLMs can write
