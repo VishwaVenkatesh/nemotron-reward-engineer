@@ -1,0 +1,13 @@
+{
+  "pelvis_height_above_ground": 0.672,
+  "left_hand_at_rest": [0.083, 0.252, -0.023],
+  "right_hand_at_rest": [0.151, -0.227, 0.022],
+  "torso_link": [-0.049, -0.0, 0.127],
+  "left_shoulder_pitch_link": [-0.031, 0.1, 0.375],
+  "left_elbow_link": [-0.052, 0.194, 0.196],
+  "right_shoulder_pitch_link": [-0.031, -0.1, 0.375],
+  "right_elbow_link": [-0.046, -0.188, 0.194],
+  "right_arm_length_shoulder_to_hand": 0.417,
+  "max_right_hand_height_above_pelvis": 0.792,
+  "approx_head_top_above_pelvis": 0.648
+}
