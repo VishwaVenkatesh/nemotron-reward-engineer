@@ -94,6 +94,19 @@ python build_site.py runs/<run_dir>
 
 _Filled in from the final run: per-round critic score and right-hand height._
 
+## Related work
+
+LLM-written rewards are an active research area. NVIDIA's **Eureka** (2023) showed that coding LLMs can write
+reward functions and improve them from training statistics, and **STRIDE** (2025) applies a similar loop to humanoid
+locomotion; the web-research step in this project surfaced STRIDE on its own. What this project adds:
+
+- **Open models only:** NVIDIA Nemotron through Nebius Token Factory, with each model routed to the job it suits.
+- **A vision critic:** Nemotron Super-VL judges the rollout video, backed by exact measurements from the simulator,
+  rather than reading training statistics alone.
+- **Grounded body geometry:** the robot is measured before any reward is written, so targets are physically reachable.
+- **Fine-tuning a real whole-body policy:** each skill is added on top of an existing G1 walk + reach controller,
+  on a single 6 GB laptop GPU, instead of training from scratch on a cluster.
+
 ## Credits
 
 MuJoCo Playground and Brax (Google DeepMind), MuJoCo MJX, Unitree G1 model. NVIDIA Nemotron models via Nebius Token Factory.
