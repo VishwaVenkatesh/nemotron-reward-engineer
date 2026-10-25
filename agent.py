@@ -13,6 +13,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from datetime import datetime
 
 from dotenv import load_dotenv
@@ -23,7 +24,8 @@ load_dotenv(os.path.join(HERE, ".env"))
 client = OpenAI(base_url="https://api.tokenfactory.nebius.com/v1/",
                 api_key=os.environ["NEBIUS_API_KEY"], timeout=600)
 
-CODER = "nvidia/Nemotron-3-Ultra-550b-a55b"
+CODER = "nvidia/Nemotron-3-Ultra-550b-a55b"   # designs the reward (hard reasoning)
+FIXER = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"  # first try at repairing compile errors (fast, cheap)
 CRITIC = "nvidia/Nemotron-3.5-Super-VL"
 PY = sys.executable
 
@@ -89,18 +91,28 @@ def run(cmd):
 
 
 def write_reward(messages, path, max_repairs=3):
-    """Ask Ultra for reward code; compile-check it; feed errors back until it passes."""
+    """Ultra designs the reward; compile errors go to Nano first (fast, cheap), then back to Ultra if Nano fails.
+    Returns (code, log) where log lists which model produced each attempt and whether it compiled."""
+    log = []
     for attempt in range(max_repairs + 1):
-        reply = chat(CODER, messages)
+        model = CODER if attempt != 1 else FIXER
+        t0 = time.time()
+        reply = chat(model, messages)
         code = extract_code(reply)
         with open(path, "w") as f:
             f.write(HEADER + code + "\n")
         rc, out, err = run([PY, "train_skill.py", "--reward", path, "--check"])
+        entry = {"attempt": attempt + 1, "model": model.split("/")[-1], "seconds": round(time.time() - t0, 1),
+                 "compiled": rc == 0}
         if rc == 0:
+            log.append(entry)
+            print(f"  attempt {attempt + 1} by {entry['model']}: compiled", flush=True)
             messages.append({"role": "assistant", "content": f"```python\n{code}\n```"})
-            return code
+            return code, log
         tail = (err or out)[-2500:]
-        print(f"  check failed (attempt {attempt + 1}):\n{tail}", flush=True)
+        entry["error"] = tail.strip().splitlines()[-1][:300] if tail.strip() else "unknown error"
+        log.append(entry)
+        print(f"  attempt {attempt + 1} by {entry['model']} failed: {entry['error']}", flush=True)
         messages += [{"role": "assistant", "content": f"```python\n{code}\n```"},
                      {"role": "user", "content": f"That code failed when compiled:\n{tail}\nFix it. Reply with ONLY one ```python code block."}]
     raise RuntimeError("could not produce a working reward")
@@ -172,7 +184,7 @@ def main():
         os.makedirs(it_dir, exist_ok=True)
         reward_path = os.path.join(it_dir, "reward.py")
         print(f"\n=== Iteration {i}: Ultra writes the reward ===", flush=True)
-        write_reward(messages, reward_path)
+        _, write_log = write_reward(messages, reward_path)
 
         print(f"=== Iteration {i}: training on GPU ===", flush=True)
         rc, out, err = run([PY, "train_skill.py", "--reward", reward_path, "--restore", start_ckpt,
@@ -191,7 +203,7 @@ def main():
         review = critique(args.task, summary, geometry)
         json.dump(review, open(os.path.join(it_dir, "critique.json"), "w"), indent=2)
         print(json.dumps(review, indent=2), flush=True)
-        history.append({"iter": i, "checkpoint": ckpt[-1], "started_from": start_ckpt,
+        history.append({"iter": i, "checkpoint": ckpt[-1], "started_from": start_ckpt, "write_log": write_log,
                         "summary": summary, "critique": review})
         score = review.get("score")
         if not args.no_chain and isinstance(score, (int, float)) and score >= best_score:

@@ -22,7 +22,7 @@ Reward design is the slowest part of robot learning. A researcher writes a rewar
         │
         ▼
 Nemotron 3 Ultra ── writes a JAX reward module (SCALES + extra_rewards)
-        │             └─ compile check in the real env; errors go back to Ultra for auto-repair
+        │             └─ compile check in the real env; errors → Nemotron Nano repairs (Ultra if Nano fails)
         ▼
 PPO fine-tune in MuJoCo MJX (Brax), starting from a G1 walk + reach policy
         │
@@ -39,14 +39,15 @@ Design details that made it work:
 
 - **Grounded geometry.** Before writing any reward, the agent measures the robot's body in simulation (shoulder height, arm length, highest reachable hand height, head height) and gives these numbers to Ultra. Without them, Ultra guessed targets that were only shoulder-high.
 - **Numbers + vision for the critic.** The robot often faces the camera, so left and right are mirrored in the image. The critic receives exact hand positions from the simulator alongside the frames.
-- **Self-repair.** Generated code is compiled in the real environment before any GPU time is spent. Compile errors go back to Ultra (e.g. it once used `jp.sigmoid`, which does not exist, and fixed it on the next attempt).
+- **Self-repair with model routing.** Generated code is compiled in the real environment before any GPU time is spent. Compile errors go to Nemotron Nano first (a quick fix rarely needs the biggest model), and back to Ultra if Nano fails (e.g. it once used `jp.sigmoid`, which does not exist, and fixed it on the next attempt).
 - **Curriculum by checkpoint chaining.** Each round fine-tunes from the best round so far, so progress accumulates instead of restarting.
 
 ## NVIDIA models used (all through Nebius Token Factory)
 
 | Model | Role |
 |---|---|
-| `nvidia/Nemotron-3-Ultra-550b-a55b` | Writes and repairs the reward code; reasons about the critic's feedback |
+| `nvidia/Nemotron-3-Ultra-550b-a55b` | Designs the reward code; reasons about the critic's feedback |
+| `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B` | First attempt at repairing compile errors (fast and cheap); Ultra takes over if Nano fails |
 | `nvidia/Nemotron-3.5-Super-VL` | Vision critic: watches rollout frames and scores the behaviour |
 
 Token Factory's OpenAI-compatible API meant the whole agent is ~250 lines with the standard `openai` client: one base URL, two model names, and a vision model that accepts base64 frames directly.

@@ -43,7 +43,7 @@ a{color:var(--accent)}
 <p class="lede">Type a skill in plain English. An AI agent writes the reinforcement‑learning reward, trains a Unitree G1 humanoid,
 <b>watches the result</b>, and rewrites the reward until the robot gets it right. No human tuning in the loop.</p>
 <div class="pipeline">
-<span><b>Nemotron 3 Ultra</b> writes reward code</span><span>→ compile check, auto‑repair</span>
+<span><b>Nemotron 3 Ultra</b> writes reward code</span><span>→ compile check; <b>Nemotron Nano</b> repairs errors</span>
 <span>→ PPO fine‑tune in MuJoCo MJX</span><span>→ rollout video + measured hand positions</span>
 <span><b>Nemotron 3.5 Super‑VL</b> critiques</span><span>→ back to Ultra</span>
 </div>
@@ -72,6 +72,7 @@ a{color:var(--accent)}
       <p></p>
       <p><b>Problems:</b> </p>
       <p><b>Suggestion:</b> </p>
+      
       <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
 import jax.numpy as jp
 
@@ -125,6 +126,7 @@ def extra_rewards(env, data, action, info):
       <p>The robot walks forward while keeping its arms largely down by its sides. The right hand remains at approximately waist level (around 0.2m above the pelvis), which is far below the head height (approx 0.65m above the pelvis).</p>
       <p><b>Problems:</b> The right hand is never raised above the head. There is no waving motion at head level; the arm stays low near the hips throughout the sequence.</p>
       <p><b>Suggestion:</b> Command the right shoulder to elevate significantly to lift the hand above the head level (target &gt; 0.65m pelvis height) and implement a side-to-side oscillation at that height.</p>
+      
       <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
 import jax.numpy as jp
 
@@ -183,6 +185,7 @@ def extra_rewards(env, data, action, info):
       <p></p>
       <p><b>Problems:</b> </p>
       <p><b>Suggestion:</b> </p>
+      
       <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
 import jax.numpy as jp
 
@@ -259,6 +262,7 @@ def extra_rewards(env, data, action, info):
       <p>The robot raises its right hand (confirmed by simulator data as the elevated limb) to near head level while shifting its stance and stepping, indicating a walking motion. The hand exhibits some sideways movement.</p>
       <p><b>Problems:</b> The hand&#x27;s maximum height (0.603m) does not clearly exceed the head top height (approx 0.648m), so it is not strictly raised &#x27;above the head&#x27;. The side-to-side waving motion is subtle.</p>
       <p><b>Suggestion:</b> Increase the target height for the right hand to clearly surpass 0.65m and amplify the sideways y-axis movement to create a more distinct</p>
+      
       <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
 import jax.numpy as jp
 
@@ -332,6 +336,7 @@ def extra_rewards(env, data, action, info):
       <p>The robot successfully raises its right hand (identified via simulator data as the arm with negative y-coordinate and high z-height) to near head level. It maintains an upright posture throughout the sequence (stats: stayed upright=True, 500/500 steps survived). The hand is held up while the robot shifts its stance, resembling a wave or greeting gesture.</p>
       <p><b>Problems:</b> While the hand is raised high (mean height 0.58m, max 0.611m), the reference geometry indicates the head top is at 0.648m above the pelvis. Thus, the hand does not strictly clear the top of the head, falling slightly short of the &#x27;above the head&#x27; requirement. The &#x27;side to side&#x27; waving motion is subtle and mostly consists of body rotation rather than distinct lateral hand movement.</p>
       <p><b>Suggestion:</b> Increase the target elevation for the right hand to ensure it exceeds the head top height (0.648m). Program a more explicit lateral oscillation of the wrist/arm to better satisfy the &#x27;wave side to side&#x27; component.</p>
+      
       <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
 import jax.numpy as jp
 
@@ -405,6 +410,7 @@ def extra_rewards(env, data, action, info):
       <p>The robot successfully raises its right hand (identified via simulator data as the high hand at ~0.59m mean height) to approximately head level and waves it side-to-side (y-axis range -0.354 to -0.127m) while maintaining an upright walking posture across the frames.</p>
       <p><b>Problems:</b> The right hand reaches a max height of 0.621m, which is slightly below the approximate head top height of 0.648m, so it does not clearly go &#x27;above&#x27; the head. The waving motion is present but somewhat contained.</p>
       <p><b>Suggestion:</b> Increase the target height for the right hand to clearly exceed the head top and expand the sideways range of motion for a more exaggerated wave.</p>
+      
       <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
 import jax.numpy as jp
 
@@ -483,6 +489,7 @@ def extra_rewards(env, data, action, info):
       <p>The robot raises the arm identified as the right hand via simulator data (high z-position) to approximately head level and moves it side-to-side (varying y-position). It remains upright and shifts its stance, indicating walking behavior.</p>
       <p><b>Problems:</b> The hand&#x27;s maximum height (0.632m) is slightly below the head top (0.648m), so it does not clearly go *above* the head. The walking motion is minimal, appearing more like weight shifting than traversing.</p>
       <p><b>Suggestion:</b> Increase the target arm height to clearly exceed the head top and command larger leg steps to demonstrate distinct walking.</p>
+      
       <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
 import jax.numpy as jp
 
@@ -570,6 +577,7 @@ def extra_rewards(env, data, action, info):
       <p>The robot successfully raises its right hand (identified via sensor data as the limb with high elevation) to near head height and moves it sideways while maintaining an upright walking posture. The robot stays balanced throughout the sequence.</p>
       <p><b>Problems:</b> According to the data, the right hand&#x27;s maximum height (0.638m) is slightly below the head top (0.648m), so it does not strictly go *above* the head. The side-to-side waving motion is present but could be more pronounced.</p>
       <p><b>Suggestion:</b> Increase the target height for the right hand to ensure it clears the head top completely and exaggerate the lateral movement for a clearer wave.</p>
+      
       <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>import jax
 import jax.numpy as jp
 

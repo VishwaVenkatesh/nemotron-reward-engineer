@@ -82,6 +82,14 @@ def build_run(run_dir, idx, label=""):
         c = fix_critique(h["critique"])
         score = c.get("score")
         score_txt = "–" if score is None else f"{score}/10"
+        wl = h.get("write_log") or []
+        repair = ""
+        if len(wl) > 1:
+            steps = " → ".join(
+                f"{html.escape(e['model'].replace('NVIDIA-', '').split('-A')[0].replace('-550b', ''))} "
+                + ("compiled ✓" if e["compiled"] else f"failed (<code>{html.escape(e.get('error', ''))}</code>)")
+                for e in wl)
+            repair = f'<p class="small"><b>Self‑repair:</b> {steps}</p>'
         hand = h["summary"].get("hands_in_pelvis_frame_m", {}).get("right")
         if hand:
             progress.append((f"{label or rid} · round {i}", hand["height_above_pelvis_max"], score))
@@ -100,6 +108,7 @@ def build_run(run_dir, idx, label=""):
       <p>{html.escape(str(c.get('what_happens', c.get('raw', ''))))}</p>
       <p><b>Problems:</b> {html.escape(str(c.get('problems', '')))}</p>
       <p><b>Suggestion:</b> {html.escape(str(c.get('suggestion', '')))}</p>
+      {repair}
       <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>{html.escape(code)}</code></pre></details>
     </div>
   </div>
@@ -181,7 +190,7 @@ a{color:var(--accent)}
 <p class="lede">Type a skill in plain English. An AI agent writes the reinforcement‑learning reward, trains a Unitree G1 humanoid,
 <b>watches the result</b>, and rewrites the reward until the robot gets it right. No human tuning in the loop.</p>
 <div class="pipeline">
-<span><b>Nemotron 3 Ultra</b> writes reward code</span><span>→ compile check, auto‑repair</span>
+<span><b>Nemotron 3 Ultra</b> writes reward code</span><span>→ compile check; <b>Nemotron Nano</b> repairs errors</span>
 <span>→ PPO fine‑tune in MuJoCo MJX</span><span>→ rollout video + measured hand positions</span>
 <span><b>Nemotron 3.5 Super‑VL</b> critiques</span><span>→ back to Ultra</span>
 </div>
