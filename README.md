@@ -92,7 +92,30 @@ python build_site.py runs/<run_dir>
 
 ## Results
 
-_Filled in from the final run: per-round critic score and right-hand height._
+### Skill 1: raise the right hand above the head and wave while walking
+
+| Stage | Rounds | Highest right-hand height above pelvis | Critic score |
+|---|---|---|---|
+| Starting walk + reach policy | – | 0.02 m (hand at the hip) | – |
+| Stage 1, from the starting policy | 3 | 0.32 → 0.27 → 0.50 m | – · 2 · – |
+| Longer training of stage 1's best reward | – | 0.60 m | – |
+| Stage 2, continuing from the best checkpoint | 3 | 0.60 → 0.61 → 0.62 m | 7 → 7 → 8 |
+| Stage 3 | 2 | 0.63 → 0.64 m | 7 → 8 |
+
+Reference: shoulder 0.375 m, top of head ≈ 0.65 m. The robot ends up raising its hand to head height and waving
+while walking, and never fell in any rollout. It stays about 1 cm short of clearly *above* the head, which the
+critic points out in every final round.
+
+### Skill 2: walk in a half squat
+
+Starting from the same original policy: critic score **8 → 9 → 9** in three rounds, no falls. The critic confirms
+bent knees and a lowered pelvis throughout the gait (scored from video; the pelvis drop is not yet measured numerically).
+
+### Try the reward writer yourself
+
+`space/app.py` is a small Gradio app: type any skill, Nemotron 3 Ultra writes the reward live, and a plot shows how
+it responds as the hand rises from rest to full reach (no GPU needed):
+`pip install gradio jax openai matplotlib && NEBIUS_API_KEY=... python space/app.py`
 
 ## Related work
 
