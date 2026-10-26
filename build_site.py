@@ -82,6 +82,16 @@ def build_run(run_dir, idx, label=""):
         c = fix_critique(h["critique"])
         score = c.get("score")
         score_txt = "–" if score is None else f"{score}/10"
+        cosmos_html = ""
+        cp = os.path.join(it, "cosmos.json")
+        if os.path.exists(cp):
+            cz = json.load(open(cp))
+            ps = cz.get("physics_score")
+            cosmos_html = (f'<h4 style="margin-top:14px">NVIDIA Cosmos Reason 2 checked the physics'
+                           f'{"" if ps is None else f" · {ps}/10"}</h4>'
+                           f'<p>{html.escape(str(cz.get("observations", cz.get("raw", ""))))}</p>'
+                           + (f'<p><b>Physical issues:</b> {html.escape(str(cz.get("physical_issues")))}</p>'
+                              if cz.get("physical_issues") else ""))
         wl = h.get("write_log") or []
         repair = ""
         if len(wl) > 1:
@@ -108,6 +118,7 @@ def build_run(run_dir, idx, label=""):
       <p>{html.escape(str(c.get('what_happens', c.get('raw', ''))))}</p>
       <p><b>Problems:</b> {html.escape(str(c.get('problems', '')))}</p>
       <p><b>Suggestion:</b> {html.escape(str(c.get('suggestion', '')))}</p>
+      {cosmos_html}
       {repair}
       <details><summary>Reward code Nemotron Ultra wrote</summary><pre><code>{html.escape(code)}</code></pre></details>
     </div>
@@ -182,6 +193,8 @@ h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 8px}h2{margin:48px 
 .hero{margin:28px 0 8px}.hero video{aspect-ratio:auto}.hero figcaption{color:var(--muted);font-size:14px;margin-top:6px}
 .research{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:12px 0}
 .research ul{margin:8px 0 0;padding-left:20px;font-size:14px}
+.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--muted);font-weight:600}
 .iter{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0}
 .iter.best{border-color:var(--accent)}
 .iter header{display:flex;gap:12px;align-items:baseline;margin-bottom:12px}
@@ -206,13 +219,36 @@ a{color:var(--accent)}
 <div class="pipeline">
 <span><b>Nemotron Nano + Tavily</b> research the skill</span><span>→ <b>Nemotron 3 Ultra</b> writes reward code</span><span>→ compile check; <b>Nemotron Nano</b> repairs errors</span>
 <span>→ PPO fine‑tune in MuJoCo MJX</span><span>→ rollout video + measured hand positions</span>
-<span><b>Nemotron 3.5 Super‑VL</b> critiques</span><span>→ back to Ultra</span>
+<span><b>Nemotron 3.5 Super‑VL</b> critiques the task</span>{cosmos_chip}<span>→ back to Ultra</span>
 </div>
-<p class="muted small">All models served through Nebius Token Factory. Starting policy: my whole‑body walk + reach controller for the G1.</p>
+<p class="muted small">{serving_note} Starting policy: my whole‑body walk + reach controller for the G1.</p>
 {hero}{runs}
 <footer>Built for the Nebius × NVIDIA Global AI Hackathon 2026 · Physical AI track · by Vishwa Venkatesh ·
 <a href="https://github.com/VishwaVenkatesh/nemotron-reward-engineer">source code</a></footer>
 </main></body></html>"""
+
+
+def cloud_eval_section():
+    p = os.path.join(OUT, "cloud_eval.json")
+    if not os.path.exists(p):
+        return ""
+    d = json.load(open(p))
+    rows = "".join(
+        f"<tr><td>{html.escape(r['skill'].replace('_', ' '))}</td><td>{r['episodes']}</td>"
+        f"<td>{100 * r['upright_rate']:.0f}%</td><td>{r['mean_pelvis_height_m']:.2f} m</td>"
+        f"<td>{r['mean_right_hand_height_above_pelvis_m']:.2f} m</td><td>{r['mean_left_hand_height_above_pelvis_m']:.2f} m</td>"
+        f"<td>{r['mean_distance_between_hands_m']:.2f} m</td></tr>"
+        for r in d.get("results", []))
+    return f"""
+<section class="overview">
+  <h2>Cloud evaluation on Nebius Serverless Jobs</h2>
+  <p class="muted small">Each skill's final policy run on {d['results'][0]['episodes'] if d.get('results') else ''} parallel episodes with
+  random walking commands ({html.escape(d.get('platform', ''))}). Standing pelvis height is 0.67 m.</p>
+  <div class="table-wrap"><table>
+  <thead><tr><th>Skill</th><th>Episodes</th><th>Stayed upright</th><th>Pelvis height</th><th>Right hand above pelvis</th>
+  <th>Left hand above pelvis</th><th>Distance between hands</th></tr></thead>
+  <tbody>{rows}</tbody></table></div>
+</section>"""
 
 
 def main():
@@ -225,13 +261,19 @@ def main():
         path, _, label = arg.partition("::")
         html_part, prog, g = build_run(path, i + 1, label)
         parts.append(html_part); progress += prog; geo = geo or g
-    body = overview(progress, geo) + "".join(parts)
+    body = overview(progress, geo) + cloud_eval_section() + "".join(parts)
     hero = ""
     if os.path.exists(os.path.join(OUT, "before_after.mp4")):
         hero = ('<figure class="hero"><video src="before_after.mp4" autoplay muted loop playsinline controls></video>'
                 '<figcaption>Left: the first round. Right: the final round. Same robot, same starting policy; '
                 'every reward in between was written by Nemotron 3 Ultra and judged by Nemotron 3.5 Super‑VL.</figcaption></figure>')
-    open(os.path.join(OUT, "index.html"), "w").write(PAGE.replace("{hero}", hero).replace("{runs}", body))
+    import glob
+    has_cosmos = any(glob.glob(os.path.join(a.partition("::")[0], "iter_*", "cosmos.json")) for a in runs)
+    chip = '<span><b>Cosmos Reason 2</b> checks the physics</span>' if has_cosmos else ""
+    open(os.path.join(OUT, "index.html"), "w").write(
+        PAGE.replace("{hero}", hero).replace("{cosmos_chip}", chip).replace("{runs}", body).replace(
+            "{serving_note}", "Nemotron models served through Nebius Token Factory; Cosmos Reason 2 on a Nebius Serverless Endpoint."
+            if has_cosmos else "All models served through Nebius Token Factory."))
     open(os.path.join(OUT, ".nojekyll"), "w").write("")
     print(f"wrote {OUT}/index.html")
 

@@ -1,0 +1,5 @@
+[
+  {"skill": "wave",       "reward": "checkpoints/wave/reward.py",       "checkpoint": "checkpoints/wave/policy"},
+  {"skill": "half_squat", "reward": "checkpoints/half_squat/reward.py", "checkpoint": "checkpoints/half_squat/policy"},
+  {"skill": "carry_box",  "reward": "checkpoints/carry_box/reward.py",  "checkpoint": "checkpoints/carry_box/policy"}
+]
